@@ -34,8 +34,6 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
-    // TODO: add attached photos
-
     private String content;
 
     @Builder
