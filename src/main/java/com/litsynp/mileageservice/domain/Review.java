@@ -42,4 +42,10 @@ public class Review extends BaseTimeEntity {
         this.place = place;
         this.content = content;
     }
+
+    public void update(User user, Place place, String content) {
+        this.user = user;
+        this.place = place;
+        this.content = content;
+    }
 }
