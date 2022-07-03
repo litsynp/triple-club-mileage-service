@@ -17,7 +17,8 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = {@UniqueConstraint(name = "user_AK01", columnNames = {"email"})})
+@Table(name = "users",
+        uniqueConstraints = {@UniqueConstraint(name = "user_AK01", columnNames = {"email"})})
 public class User {
 
     @Id
