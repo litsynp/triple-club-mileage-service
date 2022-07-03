@@ -57,27 +57,13 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review updateReview(ReviewUpdateServiceDto dto) {
+    public Review updateReview(UUID reviewId, ReviewUpdateServiceDto dto) {
         // Find existing review
-        Review existing = reviewRepository.findById(dto.getReviewId())
+        Review existing = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundFieldException(
                         Review.class.getSimpleName(),
                         "id",
-                        dto.getUserId().toString()));
-
-        // Find if user exists
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new NotFoundFieldException(
-                        User.class.getSimpleName(),
-                        "id",
-                        dto.getUserId().toString()));
-
-        // Find if place exists
-        Place place = placeRepository.findById(dto.getPlaceId())
-                .orElseThrow(() -> new NotFoundFieldException(
-                        Place.class.getSimpleName(),
-                        "id",
-                        dto.getUserId().toString()));
+                        reviewId.toString()));
 
         /*
          * TODO
@@ -86,7 +72,7 @@ public class ReviewService {
          *  - 글과 사진이 있는 리뷰에서 사진을 모두 삭제하면 1점을 회수합니다.
          */
 
-        existing.update(user, place, dto.getContent());
+        existing.update(existing.getUser(), existing.getPlace(), dto.getContent());
 
         return existing;
     }
