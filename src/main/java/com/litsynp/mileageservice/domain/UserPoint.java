@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,7 +13,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Getter
@@ -22,8 +20,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class UserPoint extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
@@ -35,7 +31,8 @@ public class UserPoint extends BaseTimeEntity {
     private Long amount;
 
     @Builder
-    public UserPoint(User user, Long amount) {
+    public UserPoint(UUID id, User user, Long amount) {
+        this.id = id;
         this.user = user;
         this.amount = amount;
     }

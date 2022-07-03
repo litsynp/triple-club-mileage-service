@@ -6,6 +6,7 @@ import com.litsynp.mileageservice.config.QuerydslConfig;
 import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.domain.UserPoint;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +27,13 @@ class UserPointRepositoryTest {
     @DisplayName("Get user points :: Returns sum of user points :: OK")
     void getUserPoints() {
         // given
-        User user = new User("test@example.com", "12345678");
+        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
         userRepository.save(user);
 
         List<UserPoint> userPoints = List.of(
-                new UserPoint(user, 10L),
-                new UserPoint(user, -15L),
-                new UserPoint(user, 30L)
+                new UserPoint(UUID.randomUUID(), user, 10L),
+                new UserPoint(UUID.randomUUID(), user, -15L),
+                new UserPoint(UUID.randomUUID(), user, 30L)
         );
         userPointRepository.saveAll(userPoints);
 

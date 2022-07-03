@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -13,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Getter
@@ -21,8 +19,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class Review extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
@@ -37,7 +33,8 @@ public class Review extends BaseTimeEntity {
     private String content;
 
     @Builder
-    public Review(User user, Place place, String content) {
+    public Review(UUID id, User user, Place place, String content) {
+        this.id = id;
         this.user = user;
         this.place = place;
         this.content = content;

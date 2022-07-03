@@ -40,6 +40,7 @@ public class ReviewService {
                         dto.getUserId().toString()));
 
         Review review = Review.builder()
+                .id(dto.getReviewId())
                 .user(user)
                 .place(place)
                 .content(dto.getContent())
