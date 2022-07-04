@@ -1,8 +1,10 @@
 package com.litsynp.mileageservice.service;
 
+import com.litsynp.mileageservice.dao.PhotoRepository;
 import com.litsynp.mileageservice.dao.PlaceRepository;
 import com.litsynp.mileageservice.dao.ReviewRepository;
 import com.litsynp.mileageservice.dao.UserRepository;
+import com.litsynp.mileageservice.domain.Photo;
 import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.User;
@@ -22,6 +24,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
+    private final PhotoRepository photoRepository;
 
     @Transactional
     public Review writeReview(ReviewCreateServiceDto dto) {
@@ -45,6 +48,14 @@ public class ReviewService {
                 .place(place)
                 .content(dto.getContent())
                 .build();
+
+        // Add photos in the DTO
+        for (UUID attachedPhotoId : dto.getAttachedPhotoIds()) {
+            Photo attachedPhoto = photoRepository.findById(attachedPhotoId)
+                    .orElseThrow(() -> new NotFoundFieldException(
+                            Photo.class.getSimpleName(), "id", attachedPhotoId.toString()));
+            review.addPhoto(attachedPhoto);
+        }
 
         /*
          * TODO
@@ -71,6 +82,19 @@ public class ReviewService {
          *  - 글만 작성한 리뷰에 사진을 추가하면 1점을 부여합니다.
          *  - 글과 사진이 있는 리뷰에서 사진을 모두 삭제하면 1점을 회수합니다.
          */
+        // Remove existing photos that are not in the DTO
+        existing.getAttachedPhotos()
+                .stream()
+                .filter(photo -> !dto.getAttachedPhotoIds().contains(photo.getId()))
+                .forEach(existing::deletePhoto);
+
+        // Add photos in the DTO
+        for (UUID attachedPhotoId : dto.getAttachedPhotoIds()) {
+            Photo attachedPhoto = photoRepository.findById(attachedPhotoId)
+                    .orElseThrow(() -> new NotFoundFieldException(
+                            Photo.class.getSimpleName(), "id", attachedPhotoId.toString()));
+            existing.addPhoto(attachedPhoto);
+        }
 
         existing.update(existing.getUser(), existing.getPlace(), dto.getContent());
 
