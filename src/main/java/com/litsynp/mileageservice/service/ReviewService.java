@@ -75,20 +75,18 @@ public class ReviewService {
         }
 
         if (!reviewRepository.existsByIdNotAndPlaceId(review.getId(), place.getId())) {
-            // 특정 장소에 첫 리뷰 작성: 1점
+            /*
+             * 특정 장소에 첫 리뷰 작성: 1점
+             * 사용자 입장에서 본 '첫 리뷰'일 때 보너스 점수 부여
+             * - 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하고, 삭제된 이후 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여합니다.
+             * - 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하는데, 삭제되기 이전 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여하지 않습니다
+             */
             amount++;
         }
 
         if (amount > 0L) {
             userPointRepository.save(new UserPoint(UUID.randomUUID(), user, review, amount));
         }
-
-        /*
-         * TODO
-         *  사용자 입장에서 본 '첫 리뷰'일 때 보너스 점수 부여
-         *  - 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하고, 삭제된 이후 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여합니다.
-         *  - 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하는데, 삭제되기 이전 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여하지 않습니다
-         */
 
         return review;
     }
