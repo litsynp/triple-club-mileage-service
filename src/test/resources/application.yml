@@ -13,3 +13,8 @@ spring:
         default_batch_fetch_size: 100
         format_sql: true
     show-sql: true
+
+server:
+  servlet:
+    encoding:
+      force-response: true

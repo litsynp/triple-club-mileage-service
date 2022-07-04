@@ -66,7 +66,7 @@ class ReviewServiceTest {
                 .userId(user.getId())
                 .placeId(place.getId())
                 .attachedPhotoIds(new HashSet<>())
-                .content("a")
+                .content("좋아요!")
                 .build();
 
         // when
@@ -104,7 +104,7 @@ class ReviewServiceTest {
                 .userId(user.getId())
                 .placeId(place.getId())
                 .attachedPhotoIds(attachedPhotoIds)
-                .content("")
+                .content("좋아요!")
                 .build();
 
         // when
@@ -142,7 +142,7 @@ class ReviewServiceTest {
                 .userId(user.getId())
                 .placeId(place.getId())
                 .attachedPhotoIds(attachedPhotoIds)
-                .content("a")
+                .content("좋아요!")
                 .build();
 
         // when
@@ -164,7 +164,7 @@ class ReviewServiceTest {
         User userA = new User(UUID.randomUUID(), "testa@example.com", "12345678");
         userRepository.save(userA);
 
-        Review reviewA = new Review(UUID.randomUUID(), userA, place, "a");
+        Review reviewA = new Review(UUID.randomUUID(), userA, place, "좋아요!");
         reviewRepository.save(reviewA);
 
         // User B
@@ -178,7 +178,7 @@ class ReviewServiceTest {
                 .userId(userB.getId())
                 .placeId(place.getId())
                 .attachedPhotoIds(new HashSet<>())
-                .content("a")
+                .content("좋아요!")
                 .build();
 
         // when

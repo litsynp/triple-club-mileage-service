@@ -28,10 +28,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,6 +43,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@Import(HttpEncodingAutoConfiguration.class)
 @DisplayName("이벤트 API")
 class EventApiControllerTest {
 
@@ -65,7 +68,7 @@ class EventApiControllerTest {
                 .id(reviewId)
                 .user(user)
                 .place(place)
-                .content("a")
+                .content("좋아요!")
                 .build();
 
         ReviewEventCreateRequestDto request = ReviewEventCreateRequestDto.builder()
@@ -75,7 +78,7 @@ class EventApiControllerTest {
                 .userId(user.getId())
                 .placeId(place.getId())
                 .attachedPhotoIds(new HashSet<>())
-                .content("a")
+                .content("좋아요!")
                 .build();
 
         ReviewEventCreateResponseDto response = ReviewEventCreateResponseDto.builder()
@@ -83,7 +86,7 @@ class EventApiControllerTest {
                 .userId(user.getId())
                 .placeId(place.getId())
                 .attachedPhotoIds(new HashSet<>())
-                .content("a")
+                .content("좋아요!")
                 .build();
 
         given(reviewService.writeReview(any(ReviewCreateServiceDto.class)))
