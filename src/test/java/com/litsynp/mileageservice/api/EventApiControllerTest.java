@@ -1,5 +1,7 @@
 package com.litsynp.mileageservice.api;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -13,34 +15,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.litsynp.mileageservice.dao.PhotoRepository;
-import com.litsynp.mileageservice.dao.PlaceRepository;
-import com.litsynp.mileageservice.dao.UserRepository;
-import com.litsynp.mileageservice.domain.Photo;
 import com.litsynp.mileageservice.domain.Place;
+import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.User;
+import com.litsynp.mileageservice.dto.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.ReviewEventCreateRequestDto;
 import com.litsynp.mileageservice.dto.ReviewEventCreateResponseDto;
-import java.util.Set;
+import com.litsynp.mileageservice.service.ReviewService;
+import java.util.HashSet;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@WebMvcTest(EventApiController.class)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-@DisplayName("Event API")
+@DisplayName("이벤트 API")
 class EventApiControllerTest {
 
     @Autowired
@@ -49,33 +50,23 @@ class EventApiControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PlaceRepository placeRepository;
-
-    @Autowired
-    private PhotoRepository photoRepository;
+    @MockBean
+    private ReviewService reviewService;
 
     @Test
-    @DisplayName("Write review :: Get 1 point for text")
-    void writeReview_shouldGet1PointForText() throws Exception {
+    @DisplayName("Write review - 201 CREATED")
+    void writeReview() throws Exception {
+        // given
         User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
         Place place = new Place(UUID.randomUUID(), "Place 1");
-        Set<Photo> photos = Set.of(
-                new Photo(UUID.randomUUID(), "abc1.jpg", "http://example.com/abc1.jpg"),
-                new Photo(UUID.randomUUID(), "abc2.jpg", "http://example.com/abc2.jpg")
-        );
-        userRepository.save(user);
-        placeRepository.save(place);
-        photoRepository.saveAll(photos);
 
         UUID reviewId = UUID.randomUUID();
-        Set<UUID> attachedPhotoIds = photos
-                .stream()
-                .map(Photo::getId)
-                .collect(Collectors.toSet());
+        Review expected = Review.builder()
+                .id(reviewId)
+                .user(user)
+                .place(place)
+                .content("a")
+                .build();
 
         ReviewEventCreateRequestDto request = ReviewEventCreateRequestDto.builder()
                 .type("REVIEW")
@@ -83,7 +74,7 @@ class EventApiControllerTest {
                 .reviewId(reviewId)
                 .userId(user.getId())
                 .placeId(place.getId())
-                .attachedPhotoIds(attachedPhotoIds)
+                .attachedPhotoIds(new HashSet<>())
                 .content("a")
                 .build();
 
@@ -91,10 +82,14 @@ class EventApiControllerTest {
                 .id(reviewId)
                 .userId(user.getId())
                 .placeId(place.getId())
-                .attachedPhotoIds(attachedPhotoIds)
+                .attachedPhotoIds(new HashSet<>())
                 .content("a")
                 .build();
 
+        given(reviewService.writeReview(any(ReviewCreateServiceDto.class)))
+                .willReturn(expected);
+
+        // when & then
         mockMvc.perform(post("/events")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -131,11 +126,5 @@ class EventApiControllerTest {
                                         .description("리뷰에 첨부된 이미지들의 ID 배열"),
                                 fieldWithPath("content").type(JsonFieldType.STRING)
                                         .description("리뷰의 내용"))));
-    }
-
-    @Test
-    @DisplayName("Write review :: Get 1 point for image")
-    void writeReview_shouldGet1PointForImage() {
-
     }
 }
