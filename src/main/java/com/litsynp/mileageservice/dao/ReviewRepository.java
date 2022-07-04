@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
+    boolean existsByIdNotAndPlaceId(UUID reviewId, UUID placeId);
 }

@@ -3,11 +3,13 @@ package com.litsynp.mileageservice.service;
 import com.litsynp.mileageservice.dao.PhotoRepository;
 import com.litsynp.mileageservice.dao.PlaceRepository;
 import com.litsynp.mileageservice.dao.ReviewRepository;
+import com.litsynp.mileageservice.dao.UserPointRepository;
 import com.litsynp.mileageservice.dao.UserRepository;
 import com.litsynp.mileageservice.domain.Photo;
 import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.User;
+import com.litsynp.mileageservice.domain.UserPoint;
 import com.litsynp.mileageservice.dto.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.ReviewUpdateServiceDto;
 import com.litsynp.mileageservice.error.exception.NotFoundException;
@@ -16,6 +18,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final UserPointRepository userPointRepository;
     private final PlaceRepository placeRepository;
     private final PhotoRepository photoRepository;
 
@@ -57,6 +61,28 @@ public class ReviewService {
             review.addPhoto(attachedPhoto);
         }
 
+        reviewRepository.save(review);
+
+        long amount = 0L;
+        if (StringUtils.hasText(dto.getContent())) {
+            // 1자 이상 텍스트 작성: 1점
+            amount++;
+        }
+
+        if (!review.getAttachedPhotos().isEmpty()) {
+            // 1장 이상 사진 첨부: 1점
+            amount++;
+        }
+
+        if (!reviewRepository.existsByIdNotAndPlaceId(review.getId(), place.getId())) {
+            // 특정 장소에 첫 리뷰 작성: 1점
+            amount++;
+        }
+
+        if (amount > 0L) {
+            userPointRepository.save(new UserPoint(UUID.randomUUID(), user, review, amount));
+        }
+
         /*
          * TODO
          *  사용자 입장에서 본 '첫 리뷰'일 때 보너스 점수 부여
@@ -64,7 +90,7 @@ public class ReviewService {
          *  - 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하는데, 삭제되기 이전 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여하지 않습니다
          */
 
-        return reviewRepository.save(review);
+        return review;
     }
 
     @Transactional
