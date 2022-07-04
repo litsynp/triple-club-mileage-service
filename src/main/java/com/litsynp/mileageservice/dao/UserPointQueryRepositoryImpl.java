@@ -16,7 +16,7 @@ public class UserPointQueryRepositoryImpl implements UserPointQueryRepository {
     @Override
     public Long getUserPoints(UUID userId) {
         return query
-                .select(userPoint.amount.sum())
+                .select(userPoint.amount.sum().coalesce(0L))
                 .from(userPoint)
                 .where(userPoint.user.id.eq(userId))
                 .fetchOne();
