@@ -3,6 +3,8 @@ package com.litsynp.mileageservice.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.litsynp.mileageservice.config.QuerydslConfig;
+import com.litsynp.mileageservice.domain.Place;
+import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.domain.UserPoint;
 import java.util.List;
@@ -23,6 +25,12 @@ class UserPointRepositoryTest {
     @Autowired
     private UserPointRepository userPointRepository;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private PlaceRepository placeRepository;
+
     @Test
     @DisplayName("Get user points :: Returns sum of user points :: OK")
     void getUserPoints() {
@@ -30,10 +38,16 @@ class UserPointRepositoryTest {
         User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
         userRepository.save(user);
 
+        Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
+        placeRepository.save(place);
+
+        Review review = new Review(UUID.randomUUID(), user, place, "또 방문하고 싶어요!");
+        reviewRepository.save(review);
+
         List<UserPoint> userPoints = List.of(
-                new UserPoint(UUID.randomUUID(), user, 10L),
-                new UserPoint(UUID.randomUUID(), user, -15L),
-                new UserPoint(UUID.randomUUID(), user, 30L)
+                new UserPoint(UUID.randomUUID(), user, review, 10L),
+                new UserPoint(UUID.randomUUID(), user, review, -15L),
+                new UserPoint(UUID.randomUUID(), user, review, 30L)
         );
         userPointRepository.saveAll(userPoints);
 

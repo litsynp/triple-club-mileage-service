@@ -38,6 +38,9 @@ public class Review extends BaseTimeEntity {
     @OneToMany(mappedBy = "review", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Photo> attachedPhotos = new HashSet<>();
 
+    @OneToMany(mappedBy = "review", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserPoint> points = new HashSet<>();
+
     @NotNull
     private String content;
 
@@ -57,6 +60,16 @@ public class Review extends BaseTimeEntity {
     public void deletePhoto(Photo photo) {
         attachedPhotos.remove(photo);
         photo.setReview(null);
+    }
+
+    public void addPoint(UserPoint point) {
+        points.add(point);
+        point.setReview(this);
+    }
+
+    public void deletePoint(UserPoint point) {
+        points.remove(point);
+        point.setReview(null);
     }
 
     public void update(User user, Place place, String content) {
