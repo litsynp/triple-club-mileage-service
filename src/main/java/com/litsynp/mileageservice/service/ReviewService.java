@@ -12,6 +12,7 @@ import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.domain.UserPoint;
 import com.litsynp.mileageservice.dto.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.ReviewUpdateServiceDto;
+import com.litsynp.mileageservice.error.exception.DuplicateResourceException;
 import com.litsynp.mileageservice.error.exception.NotFoundException;
 import com.litsynp.mileageservice.error.exception.NotFoundFieldException;
 import java.util.UUID;
@@ -46,6 +47,11 @@ public class ReviewService {
                         Place.class.getSimpleName(),
                         "id",
                         dto.getUserId().toString()));
+
+        if (reviewRepository.existsByUserIdAndPlaceId(dto.getUserId(), dto.getPlaceId())) {
+            // 한 사용자는 장소마다 리뷰를 1개만 작성할 수 있다
+            throw new DuplicateResourceException(Review.class.getSimpleName());
+        }
 
         Review review = Review.builder()
                 .id(dto.getReviewId())

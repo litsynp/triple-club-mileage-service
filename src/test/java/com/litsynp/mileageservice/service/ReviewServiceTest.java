@@ -1,6 +1,7 @@
 package com.litsynp.mileageservice.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.litsynp.mileageservice.config.QuerydslConfig;
 import com.litsynp.mileageservice.dao.PhotoRepository;
@@ -14,6 +15,7 @@ import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.dto.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.ReviewUpdateServiceDto;
+import com.litsynp.mileageservice.error.exception.DuplicateResourceException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -194,6 +196,42 @@ class ReviewServiceTest {
             // then
             Long userPoints = userPointRepository.getUserPoints(userB.getId());
             assertThat(userPoints).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("Write 2 reviews on the same place by 1 user :: Rejected")
+        void writeReview_1User2ReviewOnSamePlace_rejected() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
+
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
+
+            UUID reviewId = UUID.randomUUID();
+
+            reviewService.writeReview(ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build());
+
+            // when & then
+            ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("두 번째 리뷰")
+                    .build();
+
+            DuplicateResourceException thrown = assertThrows(
+                    DuplicateResourceException.class, () ->
+                            reviewService.writeReview(dto));
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Review already exists with the same information");
         }
     }
 
