@@ -109,7 +109,7 @@ class ReviewServiceTest {
                     .userId(user.getId())
                     .placeId(place.getId())
                     .attachedPhotoIds(attachedPhotoIds)
-                    .content("좋아요!")
+                    .content("")
                     .build();
 
             // when
