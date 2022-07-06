@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,143 +50,148 @@ class ReviewServiceTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Test
-    @DisplayName("Write review with non-empty text, 0 photo for new place :: Get 1 point for text, 1 point for new place")
-    void writeReview_shouldGet_1PointForText_1PointForNewPlace() {
-        // given
-        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-        userRepository.save(user);
+    @Nested
+    @DisplayName("Write review")
+    class WriteReviewTest {
 
-        Place place = new Place(UUID.randomUUID(), "Place 1");
-        placeRepository.save(place);
+        @Test
+        @DisplayName("Write review with non-empty text, 0 photo for new place :: Get 1 point for text, 1 point for new place")
+        void writeReview_shouldGet_1PointForText_1PointForNewPlace() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
 
-        UUID reviewId = UUID.randomUUID();
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
 
-        ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
-                .reviewId(reviewId)
-                .userId(user.getId())
-                .placeId(place.getId())
-                .attachedPhotoIds(new HashSet<>())
-                .content("좋아요!")
-                .build();
+            UUID reviewId = UUID.randomUUID();
 
-        // when
-        reviewService.writeReview(dto);
+            ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build();
 
-        // then
-        Long userPoints = userPointRepository.getUserPoints(user.getId());
-        assertThat(userPoints).isEqualTo(2L);
-    }
+            // when
+            reviewService.writeReview(dto);
 
-    @Test
-    @DisplayName("Write review with empty text, 2 photos for new place :: Get 1 point for image, 1 point for new place")
-    void writeReview_shouldGet_1PointForImage_1PointForNewPlace() {
-        // given
-        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-        userRepository.save(user);
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(2L);
+        }
 
-        Place place = new Place(UUID.randomUUID(), "Place 1");
-        placeRepository.save(place);
+        @Test
+        @DisplayName("Write review with empty text, 2 photos for new place :: Get 1 point for image, 1 point for new place")
+        void writeReview_shouldGet_1PointForImage_1PointForNewPlace() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
 
-        Set<Photo> photos = Set.of(
-                new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
-                new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
-        );
-        photoRepository.saveAll(photos);
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
 
-        UUID reviewId = UUID.randomUUID();
-        Set<UUID> attachedPhotoIds = photos
-                .stream()
-                .map(Photo::getId)
-                .collect(Collectors.toSet());
+            Set<Photo> photos = Set.of(
+                    new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
+                    new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
+            );
+            photoRepository.saveAll(photos);
 
-        ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
-                .reviewId(reviewId)
-                .userId(user.getId())
-                .placeId(place.getId())
-                .attachedPhotoIds(attachedPhotoIds)
-                .content("좋아요!")
-                .build();
+            UUID reviewId = UUID.randomUUID();
+            Set<UUID> attachedPhotoIds = photos
+                    .stream()
+                    .map(Photo::getId)
+                    .collect(Collectors.toSet());
 
-        // when
-        reviewService.writeReview(dto);
+            ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(attachedPhotoIds)
+                    .content("좋아요!")
+                    .build();
 
-        // then
-        Long userPoints = userPointRepository.getUserPoints(user.getId());
-        assertThat(userPoints).isEqualTo(2L);
-    }
+            // when
+            reviewService.writeReview(dto);
 
-    @Test
-    @DisplayName("Write review with non-empty text, 2 photos for new place :: Get 1 point for text, 1 point for image, 1 point for new place")
-    void writeReview_shouldGet_1PointForText_1PointForImage_1PointForNewPlace() {
-        // given
-        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-        userRepository.save(user);
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(2L);
+        }
 
-        Place place = new Place(UUID.randomUUID(), "Place 1");
-        placeRepository.save(place);
+        @Test
+        @DisplayName("Write review with non-empty text, 2 photos for new place :: Get 1 point for text, 1 point for image, 1 point for new place")
+        void writeReview_shouldGet_1PointForText_1PointForImage_1PointForNewPlace() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
 
-        Set<Photo> photos = Set.of(
-                new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
-                new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
-        );
-        photoRepository.saveAll(photos);
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
 
-        UUID reviewId = UUID.randomUUID();
-        Set<UUID> attachedPhotoIds = photos
-                .stream()
-                .map(Photo::getId)
-                .collect(Collectors.toSet());
+            Set<Photo> photos = Set.of(
+                    new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
+                    new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
+            );
+            photoRepository.saveAll(photos);
 
-        ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
-                .reviewId(reviewId)
-                .userId(user.getId())
-                .placeId(place.getId())
-                .attachedPhotoIds(attachedPhotoIds)
-                .content("좋아요!")
-                .build();
+            UUID reviewId = UUID.randomUUID();
+            Set<UUID> attachedPhotoIds = photos
+                    .stream()
+                    .map(Photo::getId)
+                    .collect(Collectors.toSet());
 
-        // when
-        reviewService.writeReview(dto);
+            ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(attachedPhotoIds)
+                    .content("좋아요!")
+                    .build();
 
-        // then
-        Long userPoints = userPointRepository.getUserPoints(user.getId());
-        assertThat(userPoints).isEqualTo(3L);
-    }
+            // when
+            reviewService.writeReview(dto);
 
-    @Test
-    @DisplayName("Write review with non-empty text for non-new place :: Get 1 point for text")
-    void writeReview_shouldGet_1PointForText() {
-        // given
-        Place place = new Place(UUID.randomUUID(), "Place 1");
-        placeRepository.save(place);
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(3L);
+        }
 
-        // User A
-        User userA = new User(UUID.randomUUID(), "testa@example.com", "12345678");
-        userRepository.save(userA);
+        @Test
+        @DisplayName("Write review with non-empty text for non-new place :: Get 1 point for text")
+        void writeReview_shouldGet_1PointForText() {
+            // given
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
 
-        Review reviewA = new Review(UUID.randomUUID(), userA, place, "좋아요!");
-        reviewRepository.save(reviewA);
+            // User A
+            User userA = new User(UUID.randomUUID(), "testa@example.com", "12345678");
+            userRepository.save(userA);
 
-        // User B
-        User userB = new User(UUID.randomUUID(), "testb@example.com", "12345678");
-        userRepository.save(userB);
+            Review reviewA = new Review(UUID.randomUUID(), userA, place, "좋아요!");
+            reviewRepository.save(reviewA);
 
-        UUID reviewId = UUID.randomUUID();
+            // User B
+            User userB = new User(UUID.randomUUID(), "testb@example.com", "12345678");
+            userRepository.save(userB);
 
-        ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
-                .reviewId(reviewId)
-                .userId(userB.getId())
-                .placeId(place.getId())
-                .attachedPhotoIds(new HashSet<>())
-                .content("좋아요!")
-                .build();
+            UUID reviewId = UUID.randomUUID();
 
-        // when
-        reviewService.writeReview(dto);
+            ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(userB.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build();
 
-        // then
-        Long userPoints = userPointRepository.getUserPoints(userB.getId());
-        assertThat(userPoints).isEqualTo(1L);
+            // when
+            reviewService.writeReview(dto);
+
+            // then
+            Long userPoints = userPointRepository.getUserPoints(userB.getId());
+            assertThat(userPoints).isEqualTo(1L);
+        }
     }
 }
