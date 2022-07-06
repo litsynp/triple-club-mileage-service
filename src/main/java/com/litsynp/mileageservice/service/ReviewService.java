@@ -15,6 +15,7 @@ import com.litsynp.mileageservice.dto.ReviewUpdateServiceDto;
 import com.litsynp.mileageservice.error.exception.NotFoundException;
 import com.litsynp.mileageservice.error.exception.NotFoundFieldException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,6 +111,7 @@ public class ReviewService {
         existing.getAttachedPhotos()
                 .stream()
                 .filter(photo -> !dto.getAttachedPhotoIds().contains(photo.getId()))
+                .collect(Collectors.toList())
                 .forEach(existing::deletePhoto);
 
         // Add photos in the DTO
