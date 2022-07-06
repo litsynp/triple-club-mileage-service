@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: p6spy
   datasource:
     url: jdbc:h2:mem:testdb
     username: sa
@@ -12,7 +14,8 @@ spring:
         jdbc.batch_size: 100
         default_batch_fetch_size: 100
         format_sql: true
-    show-sql: true
+        use_sql_comments: true
+    show-sql: false
 
 server:
   servlet:
