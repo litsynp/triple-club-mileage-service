@@ -142,13 +142,13 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(UUID reviewId) {
+    public void deleteReviewById(UUID reviewId) {
         if (reviewRepository.findById(reviewId).isEmpty()) {
             throw new NotFoundException(Review.class.getSimpleName(), reviewId);
         }
 
-        // TODO: 리뷰를 삭제하면 해당 리뷰로 부여한 내용 점수와 보너스 점수 회수
-
+        // 리뷰를 삭제하면 해당 리뷰로 부여한 내용 점수와 보너스 점수 회수
+        userPointRepository.deleteAllByReviewId(reviewId);
         reviewRepository.deleteById(reviewId);
     }
 }

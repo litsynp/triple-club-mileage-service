@@ -411,4 +411,51 @@ class ReviewServiceTest {
             assertThat(userPoints).isEqualTo(2L);
         }
     }
+
+    @Nested
+    @DisplayName("Delete review by ID")
+    class DeleteReviewTest {
+
+        @Test
+        @DisplayName("Delete review :: All photos and points removed")
+        void deleteReview_allPhotosAndPointsRemoved() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
+
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
+
+            UUID reviewId = UUID.randomUUID();
+
+            // Update review with new images - 1 point for content, 1 point for image, 1 point for new review
+            List<Photo> photos = List.of(
+                    new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
+                    new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
+            );
+            photoRepository.saveAll(photos);
+
+            Set<UUID> attachedPhotoIds = photos
+                    .stream()
+                    .map(Photo::getId)
+                    .collect(Collectors.toSet());
+
+            // Write review first - 1 point for new review
+            Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(attachedPhotoIds)
+                    .content("좋아요!")
+                    .build());
+
+            // when
+            reviewService.deleteReviewById(review.getId());
+
+            // then
+            assertThat(reviewRepository.findById(reviewId)).isEmpty();
+            assertThat(userPointRepository.getUserPoints(user.getId())).isZero();
+            assertThat(photoRepository.findAll()).isEmpty();
+        }
+    }
 }

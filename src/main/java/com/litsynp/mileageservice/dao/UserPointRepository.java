@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserPointRepository extends JpaRepository<UserPoint, UUID>,
         UserPointQueryRepository {
 
+    Long deleteAllByReviewId(UUID reviewId);
 }
