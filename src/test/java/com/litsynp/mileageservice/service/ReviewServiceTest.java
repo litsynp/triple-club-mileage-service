@@ -13,7 +13,9 @@ import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.dto.ReviewCreateServiceDto;
+import com.litsynp.mileageservice.dto.ReviewUpdateServiceDto;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -192,6 +194,221 @@ class ReviewServiceTest {
             // then
             Long userPoints = userPointRepository.getUserPoints(userB.getId());
             assertThat(userPoints).isEqualTo(1L);
+        }
+    }
+
+    @Nested
+    @DisplayName("Update review")
+    class UpdateReviewTest {
+
+        @Test
+        @DisplayName("Update review :: 0 photos, 1+ content previously - Add photos :: +1 point")
+        void updateReview_0PhotosPlus1ContentPreviously_addPhotos_add1Point() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
+
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
+
+            UUID reviewId = UUID.randomUUID();
+
+            // Write review first - 2 points (1 point for content, 1 point for new review)
+            Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build());
+
+            // Update review with new images
+            Set<Photo> photos = Set.of(
+                    new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
+                    new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
+            );
+            photoRepository.saveAll(photos);
+
+            Set<UUID> attachedPhotoIds = photos
+                    .stream()
+                    .map(Photo::getId)
+                    .collect(Collectors.toSet());
+
+            ReviewUpdateServiceDto dto = ReviewUpdateServiceDto.builder()
+                    .attachedPhotoIds(attachedPhotoIds)
+                    .content("좋아요!")
+                    .build();
+
+            // when
+            reviewService.updateReview(review.getId(), dto);
+
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(3L);
+        }
+
+        @Test
+        @DisplayName("Update review :: 0 photos, 1+ content previously - Change content :: +0 point")
+        void updateReview_0PhotoPlus1ContentPreviously_changeContent_add0Point() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
+
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
+
+            UUID reviewId = UUID.randomUUID();
+
+            // Write review first - 2 points (1 point for content, 1 point for new review)
+            Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build());
+
+            // Update review
+            ReviewUpdateServiceDto dto = ReviewUpdateServiceDto.builder()
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build();
+
+            // when
+            reviewService.updateReview(review.getId(), dto);
+
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(2L);
+        }
+
+        @Test
+        @DisplayName("Update review :: 0 photos, 0 content previously - Add content :: +0 point")
+        void updateReview_0Photos0ContentPreviously_changeContentAndAddPhotos_remove1Point() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
+
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
+
+            UUID reviewId = UUID.randomUUID();
+
+            // Write review first - 1 point for new review
+            Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("")
+                    .build());
+
+            // Update review
+            ReviewUpdateServiceDto dto = ReviewUpdateServiceDto.builder()
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build();
+
+            // when
+            reviewService.updateReview(review.getId(), dto);
+
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("Update review :: 2 photos, 1+ content previously - Remove 1 photo :: -0 point")
+        void updateReview_2PhotosPlus1ContentPreviously_remove1Photo_remove0Point() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
+
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
+
+            UUID reviewId = UUID.randomUUID();
+
+            // Update review with new images - 1 point for content, 1 point for image, 1 point for new review
+            List<Photo> photos = List.of(
+                    new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
+                    new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
+            );
+            photoRepository.saveAll(photos);
+
+            Set<UUID> attachedPhotoIds = photos
+                    .stream()
+                    .map(Photo::getId)
+                    .collect(Collectors.toSet());
+
+            // Write review first - 1 point for new review
+            Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(attachedPhotoIds)
+                    .content("좋아요!")
+                    .build());
+
+            // Update review
+            ReviewUpdateServiceDto dto = ReviewUpdateServiceDto.builder()
+                    .attachedPhotoIds(Set.of(photos.get(0).getId()))
+                    .content("좋아요!")
+                    .build();
+
+            // when
+            reviewService.updateReview(review.getId(), dto);
+
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(3L);
+        }
+
+        @Test
+        @DisplayName("Update review :: 2 photos, 1+ content previously - Remove all photos :: -1 point")
+        void updateReview_2PhotosPlus1ContentPreviously_removeAllPhotos_remove1Point() {
+            // given
+            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+            userRepository.save(user);
+
+            Place place = new Place(UUID.randomUUID(), "Place 1");
+            placeRepository.save(place);
+
+            UUID reviewId = UUID.randomUUID();
+
+            // Update review with new images - 1 point for content, 1 point for image, 1 point for new review
+            List<Photo> photos = List.of(
+                    new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
+                    new Photo(UUID.randomUUID(), "abc2.jpg", "https://example.com/abc2.jpg")
+            );
+            photoRepository.saveAll(photos);
+
+            Set<UUID> attachedPhotoIds = photos
+                    .stream()
+                    .map(Photo::getId)
+                    .collect(Collectors.toSet());
+
+            // Write review first - 1 point for new review
+            Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
+                    .reviewId(reviewId)
+                    .userId(user.getId())
+                    .placeId(place.getId())
+                    .attachedPhotoIds(attachedPhotoIds)
+                    .content("좋아요!")
+                    .build());
+
+            // Update review
+            ReviewUpdateServiceDto dto = ReviewUpdateServiceDto.builder()
+                    .attachedPhotoIds(new HashSet<>())
+                    .content("좋아요!")
+                    .build();
+
+            // when
+            reviewService.updateReview(review.getId(), dto);
+
+            // then
+            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            assertThat(userPoints).isEqualTo(2L);
         }
     }
 }

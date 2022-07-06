@@ -101,12 +101,9 @@ public class ReviewService {
                         "id",
                         reviewId.toString()));
 
-        /*
-         * TODO
-         *  리뷰를 수정하면 수정한 내용에 맞는 내용 점수를 계산하여 점수를 부여하거나 회수합니다.
-         *  - 글만 작성한 리뷰에 사진을 추가하면 1점을 부여합니다.
-         *  - 글과 사진이 있는 리뷰에서 사진을 모두 삭제하면 1점을 회수합니다.
-         */
+        // 사진이 원래 없었는지
+        boolean emptyPhotosBefore = existing.getAttachedPhotos().isEmpty();
+
         // Remove existing photos that are not in the DTO
         existing.getAttachedPhotos()
                 .stream()
@@ -120,6 +117,23 @@ public class ReviewService {
                     .orElseThrow(() -> new NotFoundFieldException(
                             Photo.class.getSimpleName(), "id", attachedPhotoId.toString()));
             existing.addPhoto(attachedPhoto);
+        }
+
+        // 리뷰를 수정하면 수정한 내용에 맞는 내용 점수를 계산하여 점수를 부여하거나 회수합니다.
+        if (emptyPhotosBefore && !existing.getAttachedPhotos().isEmpty()) {
+            // 글만 작성한 리뷰에 사진을 추가하면 1점을 부여합니다.
+            UserPoint point = new UserPoint(UUID.randomUUID(), existing.getUser(), existing, 1L);
+            userPointRepository.save(point);
+        }
+
+        if (!emptyPhotosBefore && existing.getAttachedPhotos().isEmpty()) {
+            // 글과 사진이 있는 리뷰에서 사진을 모두 삭제하면 1점을 회수합니다.
+            Long userPoints = userPointRepository.getUserPoints(existing.getUser().getId());
+            if (userPoints > 0) {
+                // 1점 이상 있다면, 1점 차감
+                userPointRepository.save(
+                        new UserPoint(UUID.randomUUID(), existing.getUser(), existing, -1L));
+            }
         }
 
         existing.update(existing.getUser(), existing.getPlace(), dto.getContent());
