@@ -16,6 +16,7 @@ spring:
         format_sql: true
         use_sql_comments: true
     show-sql: false
+  sql.init.mode: never # disable schema.sql
 
 server:
   servlet:
