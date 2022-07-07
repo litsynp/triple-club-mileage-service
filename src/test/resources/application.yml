@@ -2,7 +2,7 @@ spring:
   profiles:
     include: p6spy
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;mode=mysql;database_to_lower=true
     username: sa
     password:
   jpa:

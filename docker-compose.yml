@@ -1,0 +1,18 @@
+version: '3.8'
+
+volumes:
+  mysql_data:
+
+services:
+  db:
+    image: mysql:8.0.29-oracle
+    platform: linux/amd64
+    environment:
+      - MYSQL_DATABASE=testdb
+      - MYSQL_ROOT_PASSWORD=testpass
+      - MYSQL_USER=testuser
+      - MYSQL_PASSWORD=testpass
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
