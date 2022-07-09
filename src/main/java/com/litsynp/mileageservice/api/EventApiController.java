@@ -2,6 +2,8 @@ package com.litsynp.mileageservice.api;
 
 import com.litsynp.mileageservice.dto.ReviewEventCreateRequestDto;
 import com.litsynp.mileageservice.dto.ReviewEventCreateResponseDto;
+import com.litsynp.mileageservice.error.ErrorCode;
+import com.litsynp.mileageservice.error.exception.BusinessException;
 import com.litsynp.mileageservice.service.ReviewService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,6 @@ public class EventApiController {
             }
         }
 
-        // TODO: Throw exception
-        return ResponseEntity.noContent().build();
+        throw new BusinessException("Event and action not supported", ErrorCode.INVALID_INPUT_VALUE);
     }
 }
