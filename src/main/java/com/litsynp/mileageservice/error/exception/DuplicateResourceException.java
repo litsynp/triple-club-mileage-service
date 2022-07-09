@@ -1,12 +1,11 @@
 package com.litsynp.mileageservice.error.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.litsynp.mileageservice.error.ErrorCode;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class DuplicateResourceException extends RuntimeException{
+public class DuplicateResourceException extends BusinessException {
 
     public DuplicateResourceException(String resourceName) {
-        super(resourceName + " already exists with the same information");
+        super(resourceName + " already exists with the same information",
+                ErrorCode.DUPLICATE_ENTITY);
     }
 }

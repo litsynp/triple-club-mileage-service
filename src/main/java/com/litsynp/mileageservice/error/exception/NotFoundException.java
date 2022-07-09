@@ -1,13 +1,11 @@
 package com.litsynp.mileageservice.error.exception;
 
+import com.litsynp.mileageservice.error.ErrorCode;
 import java.util.UUID;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class NotFoundException extends RuntimeException {
+public class NotFoundException extends BusinessException {
 
     public NotFoundException(String resourceName, UUID id) {
-        super(resourceName + "not found with id = " + id);
+        super(resourceName + "not found with id = " + id, ErrorCode.ENTITY_NOT_FOUND);
     }
 }

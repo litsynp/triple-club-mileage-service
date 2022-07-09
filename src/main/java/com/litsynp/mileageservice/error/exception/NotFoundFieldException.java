@@ -1,12 +1,11 @@
 package com.litsynp.mileageservice.error.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.litsynp.mileageservice.error.ErrorCode;
 
-@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-public class NotFoundFieldException extends RuntimeException {
+public class NotFoundFieldException extends BusinessException {
 
     public NotFoundFieldException(String resourceName, String fieldName, String fieldValue) {
-        super(resourceName + "not found with " + fieldName + " = " + fieldValue);
+        super(resourceName + "not found with " + fieldName + " = " + fieldValue,
+                ErrorCode.INNER_ENTITY_NOT_FOUND);
     }
 }
