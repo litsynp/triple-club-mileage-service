@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'org.asciidoctor.convert' version '1.5.8'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
     id 'java'
 }
 
@@ -13,6 +13,8 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+
+    asciidoctorExtensions
 }
 
 repositories {
@@ -32,6 +34,8 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java'
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0")
 
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
     // Querydsl
     implementation 'com.querydsl:querydsl-jpa'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
@@ -49,8 +53,17 @@ tasks.named('test') {
 }
 
 tasks.named('asciidoctor') {
+    configurations 'asciidoctorExtensions'
     inputs.dir snippetsDir
     dependsOn test
+}
+
+bootJar {
+    dependsOn asciidoctor
+    copy {
+        from "${asciidoctor.outputDir}"
+        into 'src/main/resources/static/docs'
+    }
 }
 
 clean {

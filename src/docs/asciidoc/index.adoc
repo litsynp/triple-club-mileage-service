@@ -1,0 +1,52 @@
+= 트리플 클럽 마일리지 서비스 API
+
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Review-API]]
+== Review API
+
+[[event-write-review-api]]
+=== 리뷰 작성 이벤트
+
+==== Request
+
+include::{snippets}/event-write-review/http-request.adoc[]
+
+include::{snippets}/event-write-review/request-fields.adoc[]
+
+==== Response
+
+include::{snippets}/event-write-review/http-request.adoc[]
+
+include::{snippets}/event-write-review/response-fields.adoc[]
+
+[[event-update-review-api]]
+=== 리뷰 수정 이벤트
+
+==== Request
+
+include::{snippets}/event-update-review/http-request.adoc[]
+
+include::{snippets}/event-update-review/request-fields.adoc[]
+
+==== Response
+
+include::{snippets}/event-update-review/http-request.adoc[]
+
+include::{snippets}/event-update-review/response-fields.adoc[]
+
+[[event-delete-review-api]]
+=== 리뷰 삭제 이벤트
+
+==== Request
+
+include::{snippets}/event-delete-review/http-request.adoc[]
+
+include::{snippets}/event-delete-review/request-fields.adoc[]
+
+==== Response
+
+include::{snippets}/event-delete-review/http-response.adoc[]

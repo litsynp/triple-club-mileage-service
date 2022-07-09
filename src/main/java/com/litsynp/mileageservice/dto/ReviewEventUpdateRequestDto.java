@@ -3,22 +3,14 @@ package com.litsynp.mileageservice.dto;
 import java.util.Set;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ReviewEventCreateRequestDto extends ReviewEventRequestDto {
-
-    @NotNull(message = "user ID cannot be null")
-    private UUID userId;
-
-    @NotNull(message = "place ID cannot be null")
-    private UUID placeId;
+public class ReviewEventUpdateRequestDto extends ReviewEventRequestDto {
 
     @NotNull(message = "attached photo ID list cannot be null")
     private Set<UUID> attachedPhotoIds;
@@ -26,11 +18,8 @@ public class ReviewEventCreateRequestDto extends ReviewEventRequestDto {
     @NotNull(message = "content cannot be null")
     private String content;
 
-    public ReviewCreateServiceDto toServiceDto() {
-        return ReviewCreateServiceDto.builder()
-                .reviewId(reviewId)
-                .userId(userId)
-                .placeId(placeId)
+    public ReviewUpdateServiceDto toServiceDto() {
+        return ReviewUpdateServiceDto.builder()
                 .attachedPhotoIds(attachedPhotoIds)
                 .content(content)
                 .build();

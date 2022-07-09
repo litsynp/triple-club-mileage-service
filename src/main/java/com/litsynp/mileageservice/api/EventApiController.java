@@ -2,6 +2,10 @@ package com.litsynp.mileageservice.api;
 
 import com.litsynp.mileageservice.dto.ReviewEventCreateRequestDto;
 import com.litsynp.mileageservice.dto.ReviewEventCreateResponseDto;
+import com.litsynp.mileageservice.dto.ReviewEventDeleteRequestDto;
+import com.litsynp.mileageservice.dto.ReviewEventRequestDto;
+import com.litsynp.mileageservice.dto.ReviewEventUpdateRequestDto;
+import com.litsynp.mileageservice.dto.ReviewEventUpdateResponseDto;
 import com.litsynp.mileageservice.error.ErrorCode;
 import com.litsynp.mileageservice.error.exception.BusinessException;
 import com.litsynp.mileageservice.service.ReviewService;
@@ -22,19 +26,34 @@ public class EventApiController {
     private final ReviewService reviewService;
 
     @PostMapping
-    private ResponseEntity<?> handleEvent(@Valid @RequestBody ReviewEventCreateRequestDto dto) {
+    public ResponseEntity<?> handleEvent(@Valid @RequestBody ReviewEventRequestDto dto) {
         String type = dto.getType();
         String action = dto.getAction();
 
         if ("REVIEW".equals(type)) {
             if ("ADD".equals(action)) {
+                ReviewEventCreateRequestDto createDto = (ReviewEventCreateRequestDto) dto;
+
                 ReviewEventCreateResponseDto response = ReviewEventCreateResponseDto.from(
-                        reviewService.writeReview(dto.toServiceDto()));
+                        reviewService.writeReview(createDto.toServiceDto()));
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .body(response);
+            } else if ("MOD".equals(action)) {
+                ReviewEventUpdateRequestDto updateDto = (ReviewEventUpdateRequestDto) dto;
+
+                ReviewEventUpdateResponseDto response = ReviewEventUpdateResponseDto.from(
+                        reviewService.updateReview(updateDto.getReviewId(),
+                                updateDto.toServiceDto()));
+                return ResponseEntity.ok(response);
+            } else if ("DELETE".equals(action)) {
+                ReviewEventDeleteRequestDto deleteDto = (ReviewEventDeleteRequestDto) dto;
+
+                reviewService.deleteReviewById(deleteDto.getReviewId());
+                return ResponseEntity.noContent().build();
             }
         }
 
-        throw new BusinessException("Event and action not supported", ErrorCode.INVALID_INPUT_VALUE);
+        throw new BusinessException("Event and action not supported",
+                ErrorCode.INVALID_INPUT_VALUE);
     }
 }
