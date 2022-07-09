@@ -39,3 +39,7 @@ out/
 ### Generated ###
 # Querydsl
 src/main/generated
+
+# Logs
+spy.log
+logs/
