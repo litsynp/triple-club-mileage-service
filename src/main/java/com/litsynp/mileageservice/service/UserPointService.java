@@ -24,6 +24,6 @@ public class UserPointService {
                     userId.toString());
         }
 
-        return userPointRepository.getUserPoints(userId);
+        return userPointRepository.getAllUserPoints(userId);
     }
 }

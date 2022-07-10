@@ -22,7 +22,9 @@ create table photo
 
 alter table photo
     add constraint photo_fk01
-        foreign key (review_id) references review (id);
+        foreign key (review_id) references review (id)
+            on delete cascade
+            on update cascade;
 
 alter table photo
     add index photo_ak01 (review_id);
@@ -55,13 +57,17 @@ create table review
 
 alter table review
     add constraint review_fk01
-        foreign key (user_id) references users (id);
+        foreign key (user_id) references users (id)
+            on delete cascade
+            on update cascade;
 
 alter table review
     add constraint review_fk02
-        foreign key (place_id) references place (id);
+        foreign key (place_id) references place (id)
+            on delete cascade
+            on update cascade;
 
-ALTER TABLE review
+alter table review
     add unique review_ak01 (user_id, place_id);
 
 alter table review
@@ -76,17 +82,22 @@ create table user_point
     created_on datetime(6),
     updated_on datetime(6),
     amount     bigint     not null,
-    review_id  BINARY(16) not null,
+    review_id  BINARY(16),
     user_id    BINARY(16) not null,
     primary key (id)
 ) engine = InnoDB;
 
 alter table user_point
     add constraint user_point_fk01
-        foreign key (user_id) references users (id);
+        foreign key (user_id) references users (id)
+            on delete cascade
+            on update cascade;
+
 alter table user_point
     add constraint user_point_fk02
-        foreign key (review_id) references review (id);
+        foreign key (review_id) references review (id)
+            on delete set null
+            on update cascade;
 
 alter table user_point
     add index user_point_ak01 (user_id);

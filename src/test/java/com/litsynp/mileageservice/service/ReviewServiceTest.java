@@ -82,7 +82,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(2L);
         }
 
@@ -120,7 +120,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(2L);
         }
 
@@ -158,7 +158,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(3L);
         }
 
@@ -194,7 +194,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(userB.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userB.getId());
             assertThat(userPoints).isEqualTo(1L);
         }
 
@@ -281,7 +281,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(3L);
         }
 
@@ -316,7 +316,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(2L);
         }
 
@@ -351,7 +351,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(1L);
         }
 
@@ -398,7 +398,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(3L);
         }
 
@@ -445,7 +445,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
             assertThat(userPoints).isEqualTo(2L);
         }
     }
@@ -492,7 +492,11 @@ class ReviewServiceTest {
 
             // then
             assertThat(reviewRepository.findById(reviewId)).isEmpty();
-            assertThat(userPointRepository.getUserPoints(user.getId())).isZero();
+
+            // 총 2개 기록 = 작성 시 추가 기록 1 (첫 리뷰 1 + 내용 1 + 사진 1) + 삭제 시 회수 기록 1개
+            assertThat(userPointRepository.findAll()).hasSize(2);
+
+            assertThat(userPointRepository.getAllUserPoints(user.getId())).isZero();
             assertThat(photoRepository.findAll()).isEmpty();
         }
     }

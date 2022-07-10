@@ -4,5 +4,7 @@ import java.util.UUID;
 
 public interface UserPointQueryRepository {
 
-    Long getUserPoints(UUID userId);
+    Long getAllUserPoints(UUID userId);
+
+    Long getUserPointsFromReview(UUID userId, UUID reviewId);
 }

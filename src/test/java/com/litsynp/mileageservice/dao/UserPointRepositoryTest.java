@@ -56,7 +56,7 @@ class UserPointRepositoryTest {
         userPointRepository.saveAll(userPoints);
 
         // when
-        Long points = userPointRepository.getUserPoints(user.getId());
+        Long points = userPointRepository.getAllUserPoints(user.getId());
 
         // then
         assertThat(points).isEqualTo(25L);

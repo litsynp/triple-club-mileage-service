@@ -134,7 +134,7 @@ public class ReviewService {
 
         if (!emptyPhotosBefore && existing.getAttachedPhotos().isEmpty()) {
             // 글과 사진이 있는 리뷰에서 사진을 모두 삭제하면 1점을 회수합니다.
-            Long userPoints = userPointRepository.getUserPoints(existing.getUser().getId());
+            Long userPoints = userPointRepository.getAllUserPoints(existing.getUser().getId());
             if (userPoints > 0) {
                 // 1점 이상 있다면, 1점 차감
                 userPointRepository.save(
@@ -149,12 +149,23 @@ public class ReviewService {
 
     @Transactional
     public void deleteReviewById(UUID reviewId) {
-        if (reviewRepository.findById(reviewId).isEmpty()) {
-            throw new NotFoundException(Review.class.getSimpleName(), reviewId);
-        }
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException(Review.class.getSimpleName(), reviewId));
 
         // 리뷰를 삭제하면 해당 리뷰로 부여한 내용 점수와 보너스 점수 회수
-        userPointRepository.deleteAllByReviewId(reviewId);
+        // 하지만 기록 유지를 위해 삭제해서는 안된다.
+        Long pointsFromReview = userPointRepository.getUserPointsFromReview(
+                review.getUser().getId(), reviewId);
+
+        // 해당 리뷰로부터 얻은 점수를 계산하여 회수한다.
+        if (pointsFromReview > 0L) {
+            userPointRepository.save(
+                    new UserPoint(UUID.randomUUID(), review.getUser(), review, -pointsFromReview));
+        }
+
+        for (UserPoint point : userPointRepository.findByReviewId(reviewId)) {
+            point.setReview(null);
+        }
         reviewRepository.deleteById(reviewId);
     }
 }
