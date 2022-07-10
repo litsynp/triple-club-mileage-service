@@ -227,14 +227,14 @@ if amount > 0:
 
 즉, 작성에서 발생한 점수가 1 이상일 때만 저장합니다.
 
-`user_point` 테이블은 `review` 테이블과 FK로 연결된 테이블입니다. `CASCADE` 옵션으로 삭제될 때 리뷰가 삭제되더라도 사용자 점수 기록은 삭제되지 않고 FK가 `null`이 되도록 해서 기록을 유지합니다.
-
-대신 기록이 그대로 남아있으므로 현 점수의 합산만큼 뺀 값을 차감합니다.
+`user_point` 테이블은 `review` 테이블과 FK로 연결된 테이블입니다. `ON DELETE SET NULL` 옵션으로 삭제될 때 리뷰가 삭제되더라도 사용자 점수 기록은 삭제되지 않고 FK가 `null`이 되도록 해서 기록을 유지합니다.
 
 ```sql
 alter table user_point
     add constraint user_point_fk02 foreign key (review_id) references review (id) on delete set null on update cascade;
 ```
+
+대신 기록이 그대로 남아있으므로 현 점수의 합산만큼 뺀 값을 차감합니다.
 
 삭제할 때는 점수 계산 및 회수가 다음과 같이 진행됩니다.
 
