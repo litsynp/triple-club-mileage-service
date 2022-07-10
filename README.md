@@ -8,19 +8,23 @@
 - 전체/개인에 대한 포인트 부여 히스토리 관리
 - 개인별 누적 포인트 관리
 
-## 주요 사용 프레임워크 / 라이브러리 및 버전
+## 요구사항 및 체크리스트
 
-- Spring Boot 2.7.1
-    - Querydsl JPA
-    - Spring REST Docs (API 문서화)
-- Java 11
-- Gradle 7.4.1
-- MySQL (8.0.29) (InnoDB)
-- Docker & docker compose (MySQL 컨테이너 실행)
+- [x]  MySQL ≥ 5.7 사용
+- [x]  테이블과 인덱스에 대한 DDL 작성
+- [x]  애플리케이션으로 다음 API 제공
+    - [x]  `POST /events` 로 호출하는 포인트 적립 API
+    - [x]  포인트 조회 API
+- 상세 요구사항
+    - [x]  REST API를 제공하는 서버 애플리케이션 구현
+    - [x]  Java, Kotlin, Python, JavaScript(or TypeScript) 중 언어 선택
+    - [x]  Framework, Library 자유 사용, 추가 Data Storage 필요시 여러 종류 사용 가능
+    - [x]  README 작성
+    - [x]  테스트 케이스 작성 (Optional)
 
 ## 사용 방법
 
-먼저 `docker-compose`로 MySQL 컨테이너를 실행합니다.
+먼저 `docker compose`로 MySQL 컨테이너를 실행합니다. ([`docker-compose.yml 내용`](https://github.com/litsynp/triple-club-mileage-service/blob/main/docker-compose.yml))
 
 ```bash
 $ docker compose up
@@ -51,8 +55,32 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 
 와 같이, API 명세에 맞게 실행해보실 수 있습니다.
 
-- 미리 **사용자 2명, 장소 1개, 사진 2개**를 [`data.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/data.sql)에 넣어 애플리케이션이 시작되면 `INSERT` 되도록 했습니다.
+- 미리 **사용자 2명, 장소 1개, 사진 2개**를 [`src/main/resources/data.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/data.sql)에 넣어 애플리케이션이 시작되면 `INSERT` 되도록 했습니다.
     - 만약 초기 데이터가 필요 없으시다면 `data.sql`을 삭제하고 진행하시면 됩니다.
+
+## 주요 사용 프레임워크 / 라이브러리 및 버전
+
+- Spring Boot 2.7.1
+    - Querydsl JPA 5.0.0
+    - Spring REST Docs (API 문서화)
+    - p6spy (SQL logging)
+- Java 11
+- Gradle 7.4.1
+- MySQL (8.0.29) (InnoDB)
+- Docker & docker compose (MySQL 컨테이너 실행)
+
+## Project Summary & Architecture
+
+![3-tier-layered-architecture](https://user-images.githubusercontent.com/42485462/178142905-86592505-b3c5-455f-91de-7f2d38010e29.png)
+
+- 프로젝트 구조는 위와 같이 3 tier layered architecture로 구현하였습니다. Web, Service, Repository로 구분하였습니다.
+
+- **클라이언트 ↔ Controller**에 사용되는 DTO와, **Controller ↔ Service**에 사용되는 DTO를 구분하여 구현하였습니다.
+
+- API controller 클래스는 [`api`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/api), service 클래스는 [`service`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/service), repository는 [`dao`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/dao), entity는 [`domain`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/domain) 패키지에 관심사에 따라 모아두었습니다.
+- 각 계층에서 사용되는 DTO는 [`dto`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/dto) 패키지에 용도에 따라 모아두었습니다.
+  - 각 DTO에는 `@NotNull`과 같은 어노테이션을 이용한 validation이 적용되어 있습니다.
+- 통일된 양식의 exception handling을 위해 [`global.error`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/global/error) 패키지에 exception handler 및 exception, error code 등을 모아두었습니다.
 
 ## SQL Schema
 
@@ -60,103 +88,7 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 
 ![triple-erd](https://user-images.githubusercontent.com/42485462/178138740-3f335bc5-13f7-4b0f-a634-436d72894e78.png)
 
-스키마는 [`src/resources/schema.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/schema.sql) 에 작성하였습니다. 내용은 다음과 같습니다.
-
-```sql
-create table users
-(
-    id         BINARY(16)   not null,
-    email      varchar(255) not null unique,
-    password   varchar(255),
-    created_on datetime(6),
-    updated_on datetime(6),
-    primary key (id)
-) engine = InnoDB;
-
-alter table users
-    add index users_ak01 (email);
-
-create table photo
-(
-    id         BINARY(16)   not null,
-    filename   varchar(255) not null,
-    url        varchar(255) not null,
-    review_id  BINARY(16),
-    created_on datetime(6),
-    updated_on datetime(6),
-    primary key (id)
-) engine = InnoDB;
-
-alter table photo
-    add constraint photo_fk01 foreign key (review_id) references review (id) on delete cascade on update cascade;
-
-alter table photo
-    add index photo_ak01 (review_id);
-
-create table place
-(
-    id         BINARY(16) not null,
-    name       varchar(255),
-    created_on datetime(6),
-    updated_on datetime(6),
-    primary key (id)
-) engine = InnoDB;
-
-alter table place
-    add unique place_ak01 (name);
-
-alter table place
-    add index place_ak02 (name);
-
-create table review
-(
-    id         BINARY(16)   not null,
-    content    varchar(255) not null,
-    user_id    BINARY(16)   not null,
-    place_id   BINARY(16)   not null,
-    created_on datetime(6),
-    updated_on datetime(6),
-    primary key (id)
-) engine = InnoDB;
-
-alter table review
-    add constraint review_fk01 foreign key (user_id) references users (id) on delete cascade on update cascade;
-
-alter table review
-    add constraint review_fk02 foreign key (place_id) references place (id) on delete cascade on update cascade;
-
-alter table review
-    add unique review_ak01 (user_id, place_id);
-
-alter table review
-    add index review_ak02 (user_id);
-
-alter table review
-    add index review_ak03 (place_id);
-
-create table user_point
-(
-    id         BINARY(16) not null,
-    user_id    BINARY(16) not null,
-    review_id  BINARY(16),
-    amount     bigint     not null,
-    created_on datetime(6),
-    updated_on datetime(6),
-    primary key (id)
-) engine = InnoDB;
-
-alter table user_point
-    add constraint user_point_fk01 foreign key (user_id) references users (id) on delete cascade on update cascade;
-
-alter table user_point
-    add constraint user_point_fk02 foreign key (review_id) references review (id) on delete set null on update cascade;
-
-alter table user_point
-    add index user_point_ak01 (user_id);
-
-alter table user_point
-    add index user_point_ak02 (review_id)
-```
+스키마는 [`src/main/resources/schema.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/schema.sql) 에 작성하였습니다.
 
 DDL Schema 작성 및 unique & foreign constraint, index 설정을 하였습니다.
 
@@ -172,19 +104,11 @@ API 명세는 Spring REST Docs을 이용해 테스트를 통해 문서화했습�
 
 추가로 PDF로 제작하여 첨부합니다. [트리플 클럽 마일리지 서비스 API PDF](https://github.com/litsynp/triple-club-mileage-service/blob/main/triple-club-mileage-service-api-spec.pdf)
 
-## Requirements
+## Test Results
 
-- [x]  MySQL ≥ 5.7 사용
-- [x]  테이블과 인덱스에 대한 DDL 작성
-- [x]  애플리케이션으로 다음 API 제공
-    - [x]  `POST /events` 로 호출하는 포인트 적립 API
-    - [x]  포인트 조회 API
-- 상세 요구사항
-    - [x]  REST API를 제공하는 서버 애플리케이션 구현
-    - [x]  Java, Kotlin, Python, JavaScript(or TypeScript) 중 언어 선택
-    - [x]  Framework, Library 자유 사용, 추가 Data Storage 필요시 여러 종류 사용 가능
-    - [x]  README 작성
-    - [x]  테스트 케이스 작성 (Optional)
+JUnit 5, Assertj, BDDMockito, Spring REST Docs 및 MockMvc 등을 통해 유닛 테스트 및 통합 테스트를 진행하였습니다.
+
+![test-result](https://user-images.githubusercontent.com/42485462/178142337-a9c73b68-a166-405f-b89e-cebb5bbd5c7f.png)
 
 ## Remarks
 
