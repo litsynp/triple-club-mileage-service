@@ -77,6 +77,8 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 
 ![3-tier-layered-architecture](https://user-images.githubusercontent.com/42485462/178142905-86592505-b3c5-455f-91de-7f2d38010e29.png)
 
+출처: https://www.petrikainulainen.net/software-development/design/understanding-spring-web-application-architecture-the-classic-way/
+
 - 프로젝트 구조는 위와 같이 3 tier layered architecture로 구현하였습니다. Web, Service, Repository로 구분하였습니다.
 
 - **클라이언트 ↔ Controller**에 사용되는 DTO와, **Controller ↔ Service**에 사용되는 DTO를 구분하여 구현하였습니다.
