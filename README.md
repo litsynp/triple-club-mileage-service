@@ -1,14 +1,16 @@
-# 트리플여행자 클럽 마일리지 서비스
+# 🧳 트리플여행자 클럽 마일리지 서비스
 
 트리플 사용자들이 장소에 리뷰를 작성할 때 포인트를 부여하고, 전체/개인에 대한 포인트 부여 히스토리와, 개인별 누적 포인트를 관리하고자 합니다.
 
-## 구현 기능
+Spring Boot 애플리케이션을 이용하여 주어진 문제를 해결하고 그 방안에 대해서 이야기합니다.
+
+## 🔍 구현 기능
 
 - 장소에 리뷰를 작성하면 포인트를 부여
 - 전체/개인에 대한 포인트 부여 히스토리 관리
 - 개인별 누적 포인트 관리
 
-## 요구사항 및 체크리스트
+## ✅ 요구사항 및 체크리스트
 
 - [x]  MySQL ≥ 5.7 사용
 - [x]  테이블과 인덱스에 대한 DDL 작성
@@ -22,7 +24,7 @@
     - [x]  README 작성
     - [x]  테스트 케이스 작성 (Optional)
 
-## 사용 방법
+## ❓ 사용 방법
 
 먼저 `docker compose`로 MySQL 컨테이너를 실행합니다. ([`docker-compose.yml 내용`](https://github.com/litsynp/triple-club-mileage-service/blob/main/docker-compose.yml))
 
@@ -58,7 +60,7 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 - 미리 **사용자 2명, 장소 1개, 사진 2개**를 [`src/main/resources/data.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/data.sql)에 넣어 애플리케이션이 시작되면 `INSERT` 되도록 했습니다.
     - 만약 초기 데이터가 필요 없으시다면 `data.sql`을 삭제하고 진행하시면 됩니다.
 
-## 주요 사용 프레임워크 / 라이브러리 및 버전
+## ⚙️ 주요 사용 프레임워크 / 라이브러리 및 버전
 
 - Spring Boot 2.7.1
     - Querydsl JPA 5.0.0
@@ -69,7 +71,7 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 - MySQL (8.0.29) (InnoDB)
 - Docker & docker compose (MySQL 컨테이너 실행)
 
-## Project Summary & Architecture
+## 🚗 프로젝트 구조 및 아키텍처 요약
 
 ![3-tier-layered-architecture](https://user-images.githubusercontent.com/42485462/178142905-86592505-b3c5-455f-91de-7f2d38010e29.png)
 
@@ -79,10 +81,10 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 
 - API controller 클래스는 [`api`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/api), service 클래스는 [`service`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/service), repository는 [`dao`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/dao), entity는 [`domain`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/domain) 패키지에 관심사에 따라 모아두었습니다.
 - 각 계층에서 사용되는 DTO는 [`dto`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/dto) 패키지에 용도에 따라 모아두었습니다.
-  - 각 DTO에는 `@NotNull`과 같은 어노테이션을 이용한 validation이 적용되어 있습니다.
+    - 각 DTO에는 `@NotNull`과 같은 어노테이션을 이용한 validation이 적용되어 있습니다.
 - 통일된 양식의 exception handling을 위해 [`global.error`](https://github.com/litsynp/triple-club-mileage-service/tree/main/src/main/java/com/litsynp/mileageservice/global/error) 패키지에 exception handler 및 exception, error code 등을 모아두었습니다.
 
-## SQL Schema
+## 👥 SQL Schema 및 ERD
 
 다음은 요구사항을 바탕으로 작성한 ERD입니다.
 
@@ -94,7 +96,7 @@ DDL Schema 작성 및 unique & foreign constraint, index 설정을 하였습니�
 
 DB Engine은 **InnoDB**로 사용합니다.
 
-## API
+## 🧾 API 명세
 
 Endpoint는 리뷰 작성, 수정, 삭제 이벤트를 전달하는 `/events` 와 사용자 점수 합계를 확인하는 `/points` 로 총 2개입니다. 이벤트의 종류까지 계산하면 4개의 API가 됩니다.
 
@@ -104,15 +106,17 @@ API 명세는 Spring REST Docs을 이용해 테스트를 통해 문서화했습�
 
 추가로 PDF로 제작하여 첨부합니다. [트리플 클럽 마일리지 서비스 API PDF](https://github.com/litsynp/triple-club-mileage-service/blob/main/triple-club-mileage-service-api-spec.pdf)
 
-## Test Results
+## 👍 Test 결과
 
 JUnit 5, Assertj, BDDMockito, Spring REST Docs 및 MockMvc 등을 통해 유닛 테스트 및 통합 테스트를 진행하였습니다.
 
 ![test-result](https://user-images.githubusercontent.com/42485462/178142337-a9c73b68-a166-405f-b89e-cebb5bbd5c7f.png)
 
-## Remarks
+## 🏁 REMARKS 해결 방안
 
-### 한 사용자는 장소마다 리뷰를 1개만 작성할 수 있고, 리뷰는 수정 또는 삭제할 수 있다.
+요구사항 문서의 Remarks에 적힌 각 문제에 대한 해결 방안입니다.
+
+### ✅️ 한 사용자는 장소마다 리뷰를 1개만 작성할 수 있고, 리뷰는 수정 또는 삭제할 수 있다.
 
 한 사용자가 장소마다 리뷰를 1개만 작성할 수 있는 조건은 미리 DB에 unique constraint를 걸었습니다.
 
@@ -125,7 +129,7 @@ alter table review
 
 리뷰 수정 또는 삭제는 이벤트 API에서 `ADD` 외에도 `MOD` 및 `DELETE` `action`을 지원하여 해결하였습니다.
 
-### 리뷰 보상 점수가 존재한다.
+### ✅️ 리뷰 보상 점수가 존재한다.
 
 리뷰 보상 점수는 다음과 같습니다.
 
@@ -140,13 +144,13 @@ alter table review
 
 서비스 메서드인 `ReviewService.writeReview()` 에서 점수를 계산하는 것으로 해결했습니다. 뒤에서 설명하고 있습니다.
 
-### 포인트 증감이 있을 때마다 이력이 남아야 한다.
+### ✅ 포인트 증감이 있을 때마다 이력이 남아야 한다.
 
 작성, 수정, 삭제 Review 이벤트를 `POST /events` API를 통해 전달할 때마다 사용자의 포인트가 변동되며, 그 기록은 시간과 함께 얼마나 변동됐는지 이력이 남습니다.
 
 요청으로 전달된 DTO를 읽어 어떤 유형의 이벤트인지 판단하여, `ReviewService` 클래스에 정의된 `writeReview`, `updateReview`, `deleteReviewById` 메서드가 호출됩니다.
 
-### 사용자마다 현재 시점의 포인트 총점을 조회하거나 계산할 수 있어야 한다.
+### ✅ 사용자마다 현재 시점의 포인트 총점을 조회하거나 계산할 수 있어야 한다.
 
 각 사용자의 포인트의 총점은 `GET /points` API로 조회할 수 있습니다. Request parameter로 UUID인 사용자 ID를 전달해야 하며 (예: `GET /points?user-id=…`), 포인트의 총점을 다음과 같은 형식으로 반환합니다.
 
@@ -157,7 +161,7 @@ alter table review
 }
 ```
 
-### 포인트 부여 API 구현에 필요한 SQL 수행 시, 전체 테이블 스캔이 일어나지 않는 인덱스가 필요하다.
+### ✅ 포인트 부여 API 구현에 필요한 SQL 수행 시, 전체 테이블 스캔이 일어나지 않는 인덱스가 필요하다.
 
 MySQL에서 InnoDB를 사용하였으며, 외래키 설정을 하면 인덱스 설정이 됩니다. 그렇지만 추가로 외래키에도 인덱스 설정을 하였습니다.
 
@@ -193,7 +197,7 @@ where user_point.user_id = @user_id;
 
 `type`은 `ref`, `Using index condition`으로, 인덱스를 사용해 조회하고 있으며, 전체 테이블 스캔이 일어나지 않은 것을 알 수 있습니다.
 
-### 리뷰를 작성했다가 삭제하면 해당 리뷰로 부여한 내용 점수와 보너스 점수는 회수한다.
+### ✅ 리뷰를 작성했다가 삭제하면 해당 리뷰로 부여한 내용 점수와 보너스 점수는 회수한다.
 
 리뷰를 작성하면 `user_point` 테이블에 다음과 같은 pseudo code처럼 점수가 추가됩니다.
 
@@ -248,7 +252,7 @@ if pointsFromReview > 0L:
 
 실제로 리뷰를 다음에 작성하게 된다면, 사용자 기록은 남아 있지만 `review` 테이블에 리뷰는 없기 때문에 점수 계산이 처음 작성하는 것과 동일하게 진행됩니다.
 
-### 리뷰를 수정하면 수정한 내용에 맞는 내용 점수를 계산하여 점수를 부여하거나 회수한다.
+### ✅ 리뷰를 수정하면 수정한 내용에 맞는 내용 점수를 계산하여 점수를 부여하거나 회수한다.
 
 요구사항에 따르면 리뷰를 수정하면 다음과 같이 진행됩니다.
 
@@ -299,7 +303,7 @@ if (not emptyPhotosBefore) and len(review.photos) == 0:
 
 \* **요구사항에 따르면 글을 작성한다면 1점이 추가되지만, 글이 없는 상태에서 글을 추가하거나, 글이 있는 상태에서 없도록 수정하더라도 포인트의 변화는 일어나지 않습니다.**
 
-### 사용자 입장에서 본 ‘첫 리뷰'일 때 보너스 점수를 부여한다.
+### ✅ 사용자 입장에서 본 ‘첫 리뷰'일 때 보너스 점수를 부여한다.
 
 1. 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하고, 삭제된 이후 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여한다.
 2. 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하는데, 삭제되기 이전 사용자 B가 리뷰를 남기면 사용자 B에게 점수를 부여하지 않는다.
