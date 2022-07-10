@@ -18,12 +18,41 @@
 - MySQL (8.0.29) (InnoDB)
 - Docker & docker compose (MySQL 컨테이너 실행)
 
-## 실행 방법
+## 사용 방법
+
+먼저 `docker-compose`로 MySQL 컨테이너를 실행합니다.
 
 ```bash
-$ docker compose up # MySQL 컨테이너 실행
-$ ./gradlew bootRun # Spring Application 실행
+$ docker compose up
 ```
+
+컨테이너가 준비됐다면 스프링 애플리케이션을 빌드 후 실행합니다.
+
+```bash
+$ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
+```
+
+서버가 띄워졌다면
+
+- 리뷰 작성 이벤트 API인 `POST http://localhost:8080/events`
+    ```json
+    {
+        "type": "REVIEW",
+        "action": "ADD",
+        "reviewId": "ff35e929-fcf6-11ec-b3c2-0242ac170002",
+        "userId": "31313130-3031-3131-3130-000000000000",
+        "placeId": "8040a09f-fcf6-11ec-b3c2-0242ac170002",
+        "content": "좋아요!",
+        "attachedPhotoIds": ["48925641-70f3-4674-86e6-420bbab59bf8", "cf00ec57-563b-4f0e-b5bf-78ce28738efb"]
+    }
+    ```
+
+- 사용자 포인트 조회 API인 `GET http://localhost:8080/points?user-id=31313130-3031-3131-3130-000000000000`
+
+와 같이, API 명세에 맞게 실행해보실 수 있습니다.
+
+- 미리 **사용자 2명, 장소 1개, 사진 2개**를 [`data.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/data.sql)에 넣어 애플리케이션이 시작되면 `INSERT` 되도록 했습니다.
+    - 만약 초기 데이터가 필요 없으시다면 `data.sql`을 삭제하고 진행하시면 됩니다.
 
 ## SQL Schema
 
@@ -31,7 +60,7 @@ $ ./gradlew bootRun # Spring Application 실행
 
 ![triple-erd](https://user-images.githubusercontent.com/42485462/178138740-3f335bc5-13f7-4b0f-a634-436d72894e78.png)
 
-스키마는 `src/resources/schema.sql` 에 작성하였습니다. 내용은 다음과 같습니다.
+스키마는 [`src/resources/schema.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/schema.sql) 에 작성하였습니다. 내용은 다음과 같습니다.
 
 ```sql
 create table users
@@ -344,7 +373,7 @@ if (not emptyPhotosBefore) and len(review.photos) == 0:
 
 위와 같이 글을 올리기 전의 사진의 갯수, 글을 올린 후의 사진의 갯수를 이용하여 점수를 계산했습니다.
 
-*** 요구사항에 따르면 글을 작성한다면 1점이 추가되지만, 글이 없는 상태에서 글을 추가하거나, 글이 있는 상태에서 없도록 수정하더라도 포인트의 변화는 일어나지 않습니다.**
+\* **요구사항에 따르면 글을 작성한다면 1점이 추가되지만, 글이 없는 상태에서 글을 추가하거나, 글이 있는 상태에서 없도록 수정하더라도 포인트의 변화는 일어나지 않습니다.**
 
 ### 사용자 입장에서 본 ‘첫 리뷰'일 때 보너스 점수를 부여한다.
 
