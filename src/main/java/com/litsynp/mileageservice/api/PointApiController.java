@@ -1,6 +1,6 @@
 package com.litsynp.mileageservice.api;
 
-import com.litsynp.mileageservice.dto.response.UserPointResponseDto;
+import com.litsynp.mileageservice.dto.response.UserPointTotalResponseDto;
 import com.litsynp.mileageservice.service.UserPointService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +18,12 @@ public class PointApiController {
     private final UserPointService userPointService;
 
     @GetMapping
-    public ResponseEntity<UserPointResponseDto> getPoints(@RequestParam("user-id") String userId) {
+    public ResponseEntity<UserPointTotalResponseDto> getPoints(
+            @RequestParam("user-id") String userId) {
         UUID uuidUserId = UUID.fromString(userId);
         Long points = userPointService.getUserPoints(uuidUserId);
 
-        UserPointResponseDto response = UserPointResponseDto.builder()
+        UserPointTotalResponseDto response = UserPointTotalResponseDto.builder()
                 .userId(uuidUserId)
                 .points(points)
                 .build();

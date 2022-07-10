@@ -40,7 +40,7 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 
 서버가 띄워졌다면
 
-- 리뷰 작성 이벤트 API인 `POST http://localhost:8080/events`
+- **리뷰 작성 이벤트 API**인 `POST http://localhost:8080/events`
     ```json
     {
         "type": "REVIEW",
@@ -53,7 +53,9 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
     }
     ```
 
-- 사용자 포인트 조회 API인 `GET http://localhost:8080/points?user-id=31313130-3031-3131-3130-000000000000`
+- **사용자 포인트 총점 조회 API**인 `GET http://localhost:8080/points?user-id=31313130-3031-3131-3130-000000000000`
+
+- 페이지네이션을 제공하는 **사용자 포인트 기록 조회 API**인 `GET http://localhost:8080/point-histories`
 
 와 같이, API 명세에 맞게 실행해보실 수 있습니다.
 
@@ -98,7 +100,7 @@ DB Engine은 **InnoDB**로 사용합니다.
 
 ## 🧾 API 명세
 
-Endpoint는 리뷰 작성, 수정, 삭제 이벤트를 전달하는 `/events` 와 사용자 점수 합계를 확인하는 `/points` 로 총 2개입니다. 이벤트의 종류까지 계산하면 4개의 API가 됩니다.
+Endpoint는 리뷰 작성, 수정, 삭제 이벤트를 전달하는 `/events`, 사용자 점수 합계를 확인하는 `/points`, 사용자 점수 기록 목록을 조회하는 `/point-histories` 로 총 3개입니다. 이벤트의 종류까지 계산하면 5개의 API가 됩니다.
 
 API 명세는 Spring REST Docs을 이용해 테스트를 통해 문서화했습니다.
 
@@ -110,7 +112,7 @@ API 명세는 Spring REST Docs을 이용해 테스트를 통해 문서화했습�
 
 JUnit 5, Assertj, BDDMockito, Spring REST Docs 및 MockMvc 등을 통해 유닛 테스트 및 통합 테스트를 진행하였습니다.
 
-![test-result](https://user-images.githubusercontent.com/42485462/178142337-a9c73b68-a166-405f-b89e-cebb5bbd5c7f.png)
+![image](https://user-images.githubusercontent.com/42485462/178146949-0305612d-a6d0-4969-87fe-08dc696e868b.png)
 
 ## 🏁 REMARKS 해결 방안
 

@@ -70,3 +70,18 @@ include::{snippets}/user-total-points/request-parameters.adoc[]
 include::{snippets}/user-total-points/http-response.adoc[]
 
 include::{snippets}/user-total-points/response-fields.adoc[]
+
+[[user-point-history-api]]
+=== 사용자 포인트 기록 조회
+
+==== Request
+
+include::{snippets}/user-point-history/http-request.adoc[]
+
+include::{snippets}/user-point-history/request-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/user-point-history/http-response.adoc[]
+
+include::{snippets}/user-point-history/response-fields.adoc[]

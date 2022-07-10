@@ -1,26 +1,22 @@
 package com.litsynp.mileageservice.api;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.litsynp.mileageservice.domain.User;
-import com.litsynp.mileageservice.dto.response.UserPointResponseDto;
+import com.litsynp.mileageservice.dto.response.UserPointTotalResponseDto;
 import com.litsynp.mileageservice.service.UserPointService;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -57,12 +53,12 @@ class PointApiControllerTest {
 
     @Test
     @DisplayName("사용자 포인트 총점 조회 - 200 OK")
-    void writeReview() throws Exception {
+    void getTotalPoints() throws Exception {
         // given
         User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
                 "test@example.com", "12345678");
 
-        UserPointResponseDto response = UserPointResponseDto.builder()
+        UserPointTotalResponseDto response = UserPointTotalResponseDto.builder()
                 .userId(user.getId())
                 .points(3L)
                 .build();

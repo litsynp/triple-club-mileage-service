@@ -457,6 +457,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#user-points-api">User Points API</a>
 <ul class="sectlevel2">
 <li><a href="#user-total-points-api">사용자 포인트 집계</a></li>
+<li><a href="#user-point-history-api">사용자 포인트 기록 조회</a></li>
 </ul>
 </li>
 </ul>
@@ -868,13 +869,159 @@ Content-Length: 71
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="user-point-history-api"><a class="link" href="#user-point-history-api">사용자 포인트 기록 조회</a></h3>
+<div class="sect3">
+<h4 id="_request_5"><a class="link" href="#_request_5">Request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /point-histories?user-id=8af7030a-6639-49e3-95de-fd56e2039d8e&amp;review-id= HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>user-id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>review-id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리뷰 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_response_5"><a class="link" href="#_response_5">Response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 1613
+
+{
+  "content" : [ {
+    "id" : "d674fedf-0ba1-4a10-943f-905f1f30674b",
+    "userId" : "8af7030a-6639-49e3-95de-fd56e2039d8e",
+    "reviewId" : "abcee424-e5b2-4fe5-a08d-38461a808c07",
+    "amount" : 1,
+    "createdOn" : "2022-07-10T10:00:00"
+  }, {
+    "id" : "d674fedf-0ba1-4a10-943f-905f1f30674b",
+    "userId" : "8af7030a-6639-49e3-95de-fd56e2039d8e",
+    "reviewId" : "abcee424-e5b2-4fe5-a08d-38461a808c07",
+    "amount" : 1,
+    "createdOn" : "2022-07-10T10:00:00"
+  }, {
+    "id" : "d674fedf-0ba1-4a10-943f-905f1f30674b",
+    "userId" : "8af7030a-6639-49e3-95de-fd56e2039d8e",
+    "reviewId" : "abcee424-e5b2-4fe5-a08d-38461a808c07",
+    "amount" : 1,
+    "createdOn" : "2022-07-10T10:00:00"
+  }, {
+    "id" : "d674fedf-0ba1-4a10-943f-905f1f30674b",
+    "userId" : "8af7030a-6639-49e3-95de-fd56e2039d8e",
+    "reviewId" : "abcee424-e5b2-4fe5-a08d-38461a808c07",
+    "amount" : 1,
+    "createdOn" : "2022-07-10T10:00:00"
+  }, {
+    "id" : "d674fedf-0ba1-4a10-943f-905f1f30674b",
+    "userId" : "8af7030a-6639-49e3-95de-fd56e2039d8e",
+    "reviewId" : "abcee424-e5b2-4fe5-a08d-38461a808c07",
+    "amount" : 1,
+    "createdOn" : "2022-07-10T10:00:00"
+  } ],
+  "pageable" : {
+    "sort" : {
+      "empty" : true,
+      "sorted" : false,
+      "unsorted" : true
+    },
+    "offset" : 0,
+    "pageNumber" : 0,
+    "pageSize" : 10,
+    "paged" : true,
+    "unpaged" : false
+  },
+  "last" : true,
+  "totalPages" : 1,
+  "totalElements" : 5,
+  "size" : 10,
+  "number" : 0,
+  "sort" : {
+    "empty" : true,
+    "sorted" : false,
+    "unsorted" : true
+  },
+  "first" : true,
+  "numberOfElements" : 5,
+  "empty" : false
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content.[].id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기록 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content.[].userId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사용자 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content.[].reviewId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리뷰 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content.[].amount</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">점수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content.[].createdOn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성 시각</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2022-07-10 17:15:21 +0900
+Last updated 2022-07-10 22:26:24 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

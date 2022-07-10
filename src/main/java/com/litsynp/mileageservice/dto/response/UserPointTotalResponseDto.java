@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPointResponseDto {
+public class UserPointTotalResponseDto {
 
     private UUID userId;
     private Long points;

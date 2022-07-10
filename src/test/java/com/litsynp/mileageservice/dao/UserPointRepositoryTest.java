@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @DataJpaTest
@@ -95,5 +97,42 @@ class UserPointRepositoryTest {
 
         // then
         assertThat(points).isEqualTo(2L);
+    }
+
+    @Test
+    @DisplayName("사용자 ID 및 리뷰 ID로 포인트 기록 검색 :: 2개 중 사용자의 기록 1개만 조회 :: OK")
+    void search_ok() {
+        // given
+        // 리뷰 작성
+        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
+        userRepository.save(user);
+
+        Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
+        placeRepository.save(place);
+
+        Review review = new Review(UUID.randomUUID(), user, place, "또 방문하고 싶어요!");
+        reviewRepository.save(review);
+
+        // 같은 사용자가 다른 장소에 리뷰 작성 - 새로운 리뷰 생성
+        Place place2 = new Place(UUID.randomUUID(), "광안리 수변공원");
+        placeRepository.save(place2);
+
+        Review review2 = new Review(UUID.randomUUID(), user, place2, "좋아요!");
+        reviewRepository.save(review2);
+
+        // 각 리뷰의 포인트 저장
+        List<UserPoint> userPoints = List.of(
+                new UserPoint(UUID.randomUUID(), user, review, 2L),
+                new UserPoint(UUID.randomUUID(), user, review2, 1L)
+        );
+        userPointRepository.saveAll(userPoints);
+
+        // when
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<UserPoint> searchResult = userPointRepository.search(pageRequest, user.getId(),
+                review.getId());
+
+        // then
+        assertThat(searchResult).hasSize(1);
     }
 }
