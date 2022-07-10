@@ -20,7 +20,7 @@ public enum ErrorCode {
     HANDLE_ACCESS_DENIED(403, "C009", "Access is Denied"),
     ;
 
-    private int status;
+    private final int status;
     private final String code;
     private final String message;
 }
