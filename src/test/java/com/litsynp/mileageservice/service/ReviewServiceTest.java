@@ -55,11 +55,11 @@ class ReviewServiceTest {
     private ReviewRepository reviewRepository;
 
     @Nested
-    @DisplayName("Write review")
+    @DisplayName("리뷰 작성")
     class WriteReviewTest {
 
         @Test
-        @DisplayName("Write review with non-empty text, 0 photo for new place :: Get 1 point for text, 1 point for new place")
+        @DisplayName("글 1자 이상, 사진 0장, 새로운 장소 :: 2점")
         void writeReview_shouldGet_1PointForText_1PointForNewPlace() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -87,7 +87,7 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Write review with empty text, 2 photos for new place :: Get 1 point for image, 1 point for new place")
+        @DisplayName("글 0자, 사진 2장, 새로운 장소 :: 2점")
         void writeReview_shouldGet_1PointForImage_1PointForNewPlace() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -125,7 +125,7 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Write review with non-empty text, 2 photos for new place :: Get 1 point for text, 1 point for image, 1 point for new place")
+        @DisplayName("글 1자 이상, 사진 2장, 새로운 장소 :: 3점")
         void writeReview_shouldGet_1PointForText_1PointForImage_1PointForNewPlace() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -163,7 +163,7 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Write review with non-empty text for non-new place :: Get 1 point for text")
+        @DisplayName("글 1자 이상, 사진 0장, 새로운 장소 아님 :: 1점")
         void writeReview_shouldGet_1PointForText() {
             // given
             Place place = new Place(UUID.randomUUID(), "Place 1");
@@ -199,7 +199,7 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Write 2 reviews on the same place by 1 user :: Rejected")
+        @DisplayName("사용자 한 명이 같은 장소에 리뷰 2개 작성 시도 :: 에러")
         void writeReview_1User2ReviewOnSamePlace_rejected() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -236,11 +236,11 @@ class ReviewServiceTest {
     }
 
     @Nested
-    @DisplayName("Update review")
+    @DisplayName("리뷰 수정")
     class UpdateReviewTest {
 
         @Test
-        @DisplayName("Update review :: 0 photos, 1+ content previously - Add photos :: +1 point")
+        @DisplayName("기존 글 1자 이상, 사진 0장 :: 사진 추가 :: 1점 추가된다")
         void updateReview_0PhotosPlus1ContentPreviously_addPhotos_add1Point() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -286,7 +286,7 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Update review :: 0 photos, 1+ content previously - Change content :: +0 point")
+        @DisplayName("기존 글 1자 이상, 사진 0장 :: 글 추가 :: 점수 변동 없다")
         void updateReview_0PhotoPlus1ContentPreviously_changeContent_add0Point() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -309,7 +309,7 @@ class ReviewServiceTest {
             // Update review
             ReviewUpdateServiceDto dto = ReviewUpdateServiceDto.builder()
                     .attachedPhotoIds(new HashSet<>())
-                    .content("좋아요!")
+                    .content("너무 좋아요!")
                     .build();
 
             // when
@@ -321,8 +321,8 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Update review :: 0 photos, 0 content previously - Add content :: +0 point")
-        void updateReview_0Photos0ContentPreviously_changeContentAndAddPhotos_remove1Point() {
+        @DisplayName("기존 글 0자, 사진 0장 :: 글 1자 이상 추가 :: 1점 추가된다")
+        void updateReview_0Photos0ContentPreviously_changeContent_get1Point() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
             userRepository.save(user);
@@ -356,7 +356,7 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Update review :: 2 photos, 1+ content previously - Remove 1 photo :: -0 point")
+        @DisplayName("기존 글 1자 이상, 사진 2장 :: 사진 1장 삭제 :: 점수 변동 없다")
         void updateReview_2PhotosPlus1ContentPreviously_remove1Photo_remove0Point() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -403,7 +403,7 @@ class ReviewServiceTest {
         }
 
         @Test
-        @DisplayName("Update review :: 2 photos, 1+ content previously - Remove all photos :: -1 point")
+        @DisplayName("기존 글 1자 이상, 사진 2장 :: 사진 일괄 삭제 :: 1점 차감된다")
         void updateReview_2PhotosPlus1ContentPreviously_removeAllPhotos_remove1Point() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
@@ -451,12 +451,12 @@ class ReviewServiceTest {
     }
 
     @Nested
-    @DisplayName("Delete review by ID")
+    @DisplayName("리뷰 삭제 by ID")
     class DeleteReviewTest {
 
         @Test
-        @DisplayName("Delete review :: All photos and points removed")
-        void deleteReview_allPhotosAndPointsRemoved() {
+        @DisplayName("사진은 일괄 삭제, 포인트 기록은 유지된다")
+        void deleteReview_allPhotosDeletedAndPointsRemains() {
             // given
             User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
             userRepository.save(user);

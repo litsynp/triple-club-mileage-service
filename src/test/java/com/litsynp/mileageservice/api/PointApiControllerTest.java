@@ -70,7 +70,7 @@ class PointApiControllerTest {
     private UserPointService userPointService;
 
     @Test
-    @DisplayName("Get user points - 200 OK")
+    @DisplayName("사용자 포인트 총점 조회 - 200 OK")
     void writeReview() throws Exception {
         // given
         User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),

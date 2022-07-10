@@ -36,8 +36,8 @@ class UserPointRepositoryTest {
     private PlaceRepository placeRepository;
 
     @Test
-    @DisplayName("Get user points :: Returns sum of user points :: OK")
-    void getUserPoints() {
+    @DisplayName("사용자 포인트 전체 총점 조회")
+    void getAllUserPoints() {
         // given
         User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
         userRepository.save(user);

@@ -65,7 +65,7 @@ class EventApiControllerTest {
     private ReviewService reviewService;
 
     @Test
-    @DisplayName("Write review - 201 CREATED")
+    @DisplayName("리뷰 작성 이벤트 - 201 CREATED")
     void writeReview() throws Exception {
         // given
         User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
@@ -153,7 +153,7 @@ class EventApiControllerTest {
     }
 
     @Test
-    @DisplayName("Update review - 200 OK")
+    @DisplayName("리뷰 수정 이벤트 - 200 OK")
     void updateReview() throws Exception {
         // given
         User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
@@ -251,7 +251,7 @@ class EventApiControllerTest {
     }
 
     @Test
-    @DisplayName("Delete review - 204 No Content")
+    @DisplayName("리뷰 삭제 이벤트 - 204 No Content")
     void deleteReview() throws Exception {
         // given
         User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
