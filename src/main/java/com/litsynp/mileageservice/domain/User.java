@@ -1,5 +1,6 @@
 package com.litsynp.mileageservice.domain;
 
+import com.litsynp.mileageservice.common.domain.BaseTimeEntity;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @Column(columnDefinition = "BINARY(16)")

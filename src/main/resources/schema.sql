@@ -1,8 +1,10 @@
 create table users
 (
-    id       BINARY(16)   not null,
-    email    varchar(255) not null unique,
-    password varchar(255),
+    id         BINARY(16)   not null,
+    email      varchar(255) not null unique,
+    password   varchar(255),
+    created_on datetime(6),
+    updated_on datetime(6),
     primary key (id)
 ) engine = InnoDB;
 
@@ -12,11 +14,11 @@ alter table users
 create table photo
 (
     id         BINARY(16)   not null,
-    created_on datetime(6),
-    updated_on datetime(6),
     filename   varchar(255) not null,
     url        varchar(255) not null,
     review_id  BINARY(16),
+    created_on datetime(6),
+    updated_on datetime(6),
     primary key (id)
 ) engine = InnoDB;
 
@@ -32,9 +34,9 @@ alter table photo
 create table place
 (
     id         BINARY(16) not null,
+    name       varchar(255),
     created_on datetime(6),
     updated_on datetime(6),
-    name       varchar(255),
     primary key (id)
 ) engine = InnoDB;
 
@@ -47,11 +49,11 @@ alter table place
 create table review
 (
     id         BINARY(16)   not null,
+    content    varchar(255) not null,
+    user_id    BINARY(16)   not null,
+    place_id   BINARY(16)   not null,
     created_on datetime(6),
     updated_on datetime(6),
-    content    varchar(255) not null,
-    place_id   BINARY(16)   not null,
-    user_id    BINARY(16)   not null,
     primary key (id)
 ) engine = InnoDB;
 
@@ -79,11 +81,11 @@ alter table review
 create table user_point
 (
     id         BINARY(16) not null,
+    user_id    BINARY(16) not null,
+    review_id  BINARY(16),
+    amount     bigint     not null,
     created_on datetime(6),
     updated_on datetime(6),
-    amount     bigint     not null,
-    review_id  BINARY(16),
-    user_id    BINARY(16) not null,
     primary key (id)
 ) engine = InnoDB;
 
@@ -103,4 +105,4 @@ alter table user_point
     add index user_point_ak01 (user_id);
 
 alter table user_point
-    add index user_point_ak02 (review_id)
+    add index user_point_ak02 (review_id);
