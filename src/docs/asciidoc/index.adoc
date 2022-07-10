@@ -1,11 +1,13 @@
 = 트리플 클럽 마일리지 서비스 API
-
+:author: 이승준 (litsynp)
+:doctype: book
+:icontype: font
 :source-highlighter: highlightjs
 :toc: left
-:toclevels: 2
+:toclevels: 2`
 :sectlinks:
 
-[[Review-API]]
+[[review-api]]
 == Review API
 
 [[event-write-review-api]]
@@ -50,3 +52,21 @@ include::{snippets}/event-delete-review/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/event-delete-review/http-response.adoc[]
+
+[[user-points-api]]
+== User Points API
+
+[[user-total-points-api]]
+=== 사용자 포인트 집계
+
+==== Request
+
+include::{snippets}/user-total-points/http-request.adoc[]
+
+include::{snippets}/user-total-points/request-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/user-total-points/http-response.adoc[]
+
+include::{snippets}/user-total-points/response-fields.adoc[]
