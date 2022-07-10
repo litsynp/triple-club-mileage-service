@@ -34,14 +34,14 @@ public class ReviewService {
 
     @Transactional
     public Review writeReview(ReviewCreateServiceDto dto) {
-        // Find if user exists
+        // 사용자가 존재하는지 확인
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new NotFoundFieldException(
                         User.class.getSimpleName(),
                         "id",
                         dto.getUserId().toString()));
 
-        // Find if place exists
+        // 장소가 존재하는지 확인
         Place place = placeRepository.findById(dto.getPlaceId())
                 .orElseThrow(() -> new NotFoundFieldException(
                         Place.class.getSimpleName(),
@@ -100,24 +100,24 @@ public class ReviewService {
 
     @Transactional
     public Review updateReview(UUID reviewId, ReviewUpdateServiceDto dto) {
-        // Find existing review
+        // 기존의 리뷰 확인
         Review existing = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundFieldException(
                         Review.class.getSimpleName(),
                         "id",
                         reviewId.toString()));
 
-        // 사진이 원래 없었는지
+        // 사진이 원래 없었는지 확인
         boolean emptyPhotosBefore = existing.getAttachedPhotos().isEmpty();
 
-        // Remove existing photos that are not in the DTO
+        // DTO에 들어있지 않은 기존의 이미지 삭제
         existing.getAttachedPhotos()
                 .stream()
                 .filter(photo -> !dto.getAttachedPhotoIds().contains(photo.getId()))
                 .collect(Collectors.toList())
                 .forEach(existing::deletePhoto);
 
-        // Add photos in the DTO
+        // DTO에 들어있는 새로운 이미지 추가
         for (UUID attachedPhotoId : dto.getAttachedPhotoIds()) {
             Photo attachedPhoto = photoRepository.findById(attachedPhotoId)
                     .orElseThrow(() -> new NotFoundFieldException(

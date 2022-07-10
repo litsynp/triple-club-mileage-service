@@ -16,7 +16,7 @@ public class UserPointService {
     private final UserPointRepository userPointRepository;
 
     public Long getUserPoints(UUID userId) {
-        // Check if user with userId exists
+        // 사용자 존재 확인
         if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundFieldException(
                     User.class.getSimpleName(),
