@@ -1,6 +1,6 @@
 package com.litsynp.mileageservice.api;
 
-import com.litsynp.mileageservice.dto.UserPointResponseDto;
+import com.litsynp.mileageservice.dto.response.UserPointResponseDto;
 import com.litsynp.mileageservice.service.UserPointService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

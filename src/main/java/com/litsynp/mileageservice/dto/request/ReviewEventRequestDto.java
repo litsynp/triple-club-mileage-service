@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.dto;
+package com.litsynp.mileageservice.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

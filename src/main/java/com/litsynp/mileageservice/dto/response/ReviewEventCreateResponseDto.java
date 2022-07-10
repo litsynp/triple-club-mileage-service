@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.dto;
+package com.litsynp.mileageservice.dto.response;
 
 import static java.util.stream.Collectors.toSet;
 

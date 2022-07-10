@@ -1,6 +1,6 @@
 package com.litsynp.mileageservice.domain;
 
-import com.litsynp.mileageservice.common.domain.BaseTimeEntity;
+import com.litsynp.mileageservice.global.domain.entity.BaseTimeEntity;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;

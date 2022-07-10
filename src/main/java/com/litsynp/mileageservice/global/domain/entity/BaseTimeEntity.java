@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.common.domain;
+package com.litsynp.mileageservice.global.domain.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;

@@ -1,6 +1,6 @@
-package com.litsynp.mileageservice.error.exception;
+package com.litsynp.mileageservice.global.error.exception;
 
-import com.litsynp.mileageservice.error.ErrorCode;
+import com.litsynp.mileageservice.global.error.ErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 

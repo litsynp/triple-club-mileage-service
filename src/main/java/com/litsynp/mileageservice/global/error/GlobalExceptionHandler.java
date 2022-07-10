@@ -1,6 +1,6 @@
-package com.litsynp.mileageservice.error;
+package com.litsynp.mileageservice.global.error;
 
-import com.litsynp.mileageservice.error.exception.BusinessException;
+import com.litsynp.mileageservice.global.error.exception.BusinessException;
 import java.nio.file.AccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

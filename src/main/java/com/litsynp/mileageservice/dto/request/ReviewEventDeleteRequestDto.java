@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.dto;
+package com.litsynp.mileageservice.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

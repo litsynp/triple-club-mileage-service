@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.config;
+package com.litsynp.mileageservice.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

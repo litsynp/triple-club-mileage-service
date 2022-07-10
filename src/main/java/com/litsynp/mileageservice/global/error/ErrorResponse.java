@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.error;
+package com.litsynp.mileageservice.global.error;
 
 import java.util.ArrayList;
 import java.util.List;

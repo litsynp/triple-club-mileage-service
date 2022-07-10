@@ -1,6 +1,6 @@
 package com.litsynp.mileageservice.domain;
 
-import com.litsynp.mileageservice.common.domain.BaseTimeEntity;
+import com.litsynp.mileageservice.global.domain.entity.BaseTimeEntity;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;

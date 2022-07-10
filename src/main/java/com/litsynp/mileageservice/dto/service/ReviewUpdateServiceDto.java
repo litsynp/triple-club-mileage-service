@@ -1,5 +1,6 @@
-package com.litsynp.mileageservice.dto;
+package com.litsynp.mileageservice.dto.service;
 
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPointResponseDto {
+public class ReviewUpdateServiceDto {
 
-    private UUID userId;
-    private Long points;
+    private Set<UUID> attachedPhotoIds;
+    private String content;
 }

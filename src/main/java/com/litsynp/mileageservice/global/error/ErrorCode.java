@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.error;
+package com.litsynp.mileageservice.global.error;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

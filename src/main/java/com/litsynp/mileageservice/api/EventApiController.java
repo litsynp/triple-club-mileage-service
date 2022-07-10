@@ -1,13 +1,13 @@
 package com.litsynp.mileageservice.api;
 
-import com.litsynp.mileageservice.dto.ReviewEventCreateRequestDto;
-import com.litsynp.mileageservice.dto.ReviewEventCreateResponseDto;
-import com.litsynp.mileageservice.dto.ReviewEventDeleteRequestDto;
-import com.litsynp.mileageservice.dto.ReviewEventRequestDto;
-import com.litsynp.mileageservice.dto.ReviewEventUpdateRequestDto;
-import com.litsynp.mileageservice.dto.ReviewEventUpdateResponseDto;
-import com.litsynp.mileageservice.error.ErrorCode;
-import com.litsynp.mileageservice.error.exception.BusinessException;
+import com.litsynp.mileageservice.dto.request.ReviewEventCreateRequestDto;
+import com.litsynp.mileageservice.dto.response.ReviewEventCreateResponseDto;
+import com.litsynp.mileageservice.dto.request.ReviewEventDeleteRequestDto;
+import com.litsynp.mileageservice.dto.request.ReviewEventRequestDto;
+import com.litsynp.mileageservice.dto.request.ReviewEventUpdateRequestDto;
+import com.litsynp.mileageservice.dto.response.ReviewEventUpdateResponseDto;
+import com.litsynp.mileageservice.global.error.ErrorCode;
+import com.litsynp.mileageservice.global.error.exception.BusinessException;
 import com.litsynp.mileageservice.service.ReviewService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;

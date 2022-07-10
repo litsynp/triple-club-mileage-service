@@ -1,4 +1,4 @@
-package com.litsynp.mileageservice.config;
+package com.litsynp.mileageservice.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
