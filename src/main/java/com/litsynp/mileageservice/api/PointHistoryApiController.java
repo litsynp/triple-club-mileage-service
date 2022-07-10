@@ -22,7 +22,7 @@ public class PointHistoryApiController {
     private final UserPointService userPointService;
 
     @GetMapping
-    public ResponseEntity<Page<UserPointHistoryResponseDto>> getPoints(
+    public ResponseEntity<Page<UserPointHistoryResponseDto>> getPointHistories(
             @PageableDefault(sort = "createdOn", direction = Direction.DESC) Pageable pageable,
             @RequestParam(value = "user-id", required = false) UUID userId,
             @RequestParam(value = "review-id", required = false) UUID reviewId) {
