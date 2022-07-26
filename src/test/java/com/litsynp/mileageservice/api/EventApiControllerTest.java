@@ -29,6 +29,7 @@ import com.litsynp.mileageservice.dto.response.ReviewEventUpdateResponseDto;
 import com.litsynp.mileageservice.dto.service.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.service.ReviewUpdateServiceDto;
 import com.litsynp.mileageservice.service.ReviewService;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -302,5 +303,79 @@ class EventApiControllerTest {
                                         .description("이벤트 액션"),
                                 fieldWithPath("reviewId").type(JsonFieldType.STRING)
                                         .description("리뷰 ID"))));
+    }
+
+    @Test
+    @DisplayName("리뷰 이벤트 - 정의되지 않은 이벤트 타입 보내기 - 400")
+    void sendTypeNotInReviewType() throws Exception {
+        // given
+        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
+                "test@example.com", "12345678");
+        Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
+                "Place 1");
+
+        UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
+        Review review = Review.builder()
+                .id(reviewId)
+                .user(user)
+                .place(place)
+                .content("좋아요!")
+                .build();
+
+        // 정의되지 않은 이벤트 타입 전송
+        Map<String, ?> requestContent = Map.of(
+                "type", "NOT_DEFINED", // Undefined type
+                "action", "ADD",
+                "reviewId", review.getId().toString(),
+                "userId", user.getId().toString(),
+                "placeId", place.getId().toString(),
+                "attachedPhotoIds", new String[0],
+                "content", "좋아요!"
+        );
+
+        // when & then
+        mockMvc.perform(post("/events")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestContent)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("리뷰 이벤트 - 정의되지 않은 리뷰 액션 보내기 - 400")
+    void sendActionNotInReviewAction() throws Exception {
+        // given
+        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
+                "test@example.com", "12345678");
+        Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
+                "Place 1");
+
+        UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
+        Review review = Review.builder()
+                .id(reviewId)
+                .user(user)
+                .place(place)
+                .content("좋아요!")
+                .build();
+
+        // 정의되지 않은 이벤트 타입 전송
+        Map<String, ?> requestContent = Map.of(
+                "type", "REVIEW",
+                "action", "NOT_DEFINED", // Undefined type
+                "reviewId", review.getId().toString(),
+                "userId", user.getId().toString(),
+                "placeId", place.getId().toString(),
+                "attachedPhotoIds", new String[0],
+                "content", "좋아요!"
+        );
+
+        // when & then
+        mockMvc.perform(post("/events")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestContent)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }

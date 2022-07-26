@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.litsynp.mileageservice.domain.EventType;
+import com.litsynp.mileageservice.domain.ReviewAction;
+import com.litsynp.mileageservice.global.validation.Enum;
 import java.util.UUID;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,10 +24,10 @@ import lombok.experimental.SuperBuilder;
         @JsonSubTypes.Type(name = "DELETE", value = ReviewEventDeleteRequestDto.class),})
 public class ReviewEventRequestDto {
 
-    @NotEmpty(message = "type cannot be empty")
+    @Enum(message = "type must be REVIEW", enumClass = EventType.class)
     protected String type;
 
-    @NotEmpty(message = "action must be either [ADD, MOD, DELETE]")
+    @Enum(message = "action must be either [ADD, MOD, DELETE]", enumClass = ReviewAction.class)
     protected String action;
 
     @NotNull(message = "review ID cannot be null")
