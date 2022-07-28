@@ -9,8 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -30,9 +28,8 @@ public class Review extends BaseTimeEntity {
     @Column(columnDefinition = "BINARY(16)")
     private UUID userId;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id", nullable = false)
-    private Place place;
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID placeId;
 
     @OneToMany(mappedBy = "review", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final Set<Photo> attachedPhotos = new HashSet<>();
@@ -41,10 +38,10 @@ public class Review extends BaseTimeEntity {
     private String content;
 
     @Builder
-    public Review(UUID id, UUID userId, Place place, String content) {
+    public Review(UUID id, UUID userId, UUID placeId, String content) {
         this.id = id;
         this.userId = userId;
-        this.place = place;
+        this.placeId = placeId;
         this.content = content;
     }
 
@@ -58,9 +55,9 @@ public class Review extends BaseTimeEntity {
         photo.setReview(null);
     }
 
-    public void update(UUID userId, Place place, String content) {
+    public void update(UUID userId, UUID placeId, String content) {
         this.userId = userId;
-        this.place = place;
+        this.placeId = placeId;
         this.content = content;
     }
 }

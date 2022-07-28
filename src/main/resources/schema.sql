@@ -18,21 +18,6 @@ alter table photo
 alter table photo
     add index photo_ak01 (review_id);
 
-create table place
-(
-    id         BINARY(16) not null,
-    name       varchar(255),
-    created_on datetime(6),
-    updated_on datetime(6),
-    primary key (id)
-) engine = InnoDB;
-
-alter table place
-    add unique place_ak01 (name);
-
-alter table place
-    add index place_ak02 (name);
-
 create table review
 (
     id         BINARY(16)   not null,
@@ -43,12 +28,6 @@ create table review
     updated_on datetime(6),
     primary key (id)
 ) engine = InnoDB;
-
-alter table review
-    add constraint review_fk02
-        foreign key (place_id) references place (id)
-            on delete cascade
-            on update cascade;
 
 alter table review
     add unique review_ak01 (user_id, place_id);

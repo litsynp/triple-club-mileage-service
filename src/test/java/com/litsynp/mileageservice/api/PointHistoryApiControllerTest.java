@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.UserPoint;
 import com.litsynp.mileageservice.dto.response.UserPointHistoryResponseDto;
@@ -74,11 +73,19 @@ class PointHistoryApiControllerTest {
         UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
 
         List<UserPoint> content = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            Place place = new Place(
-                    UUID.fromString("eaa5b92d-45e1-443d-938f-eb30f24ebcc9"), "장소 " + i);
+
+        UUID[] placeIds = new UUID[]{
+                UUID.fromString("eaa5b92d-45e1-443d-938f-eb30f24ebcc9"),
+                UUID.fromString("339d46a7-d25d-4581-861f-7e3aa27c4f08"),
+                UUID.fromString("b619fe1d-0ec4-4925-b81f-759f2e532b41"),
+                UUID.fromString("0e1b62f9-9781-43d7-8eaa-d14556d2689a"),
+                UUID.fromString("35772649-c9fa-47ff-8e7f-3193d8cd5475")
+        };
+
+        for (int i = 0; i < placeIds.length; i++) {
             Review review = new Review(
-                    UUID.fromString("abcee424-e5b2-4fe5-a08d-38461a808c07"), userId, place, "좋아요!");
+                    UUID.fromString("abcee424-e5b2-4fe5-a08d-38461a808c07"), userId, placeIds[i],
+                    "좋아요!");
 
             // 포인트 생성 후 Reflection으로 날짜 수정
             UserPoint userPoint = new UserPoint(

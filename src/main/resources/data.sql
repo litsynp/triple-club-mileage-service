@@ -1,18 +1,6 @@
 use testdb;
 
 # =========================================== #
-# place
-# =========================================== #
-# Set place ID
-set @place_id = uuid_to_bin('8040a09f-fcf6-11ec-b3c2-0242ac170002');
-
-# Create place
-insert
-into place
-    (created_on, updated_on, name, id)
-values (now(), now(), "해운대 수변공원", @place_id);
-
-# =========================================== #
 # Photo
 # =========================================== #
 # Set photo ID

@@ -2,7 +2,6 @@ package com.litsynp.mileageservice.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.UserPoint;
 import com.litsynp.mileageservice.global.config.QuerydslConfig;
@@ -30,19 +29,14 @@ class UserPointRepositoryTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private PlaceRepository placeRepository;
-
     @Test
     @DisplayName("사용자 포인트 전체 총점 조회")
     void getAllUserPoints() {
         // given
         UUID userId = UUID.randomUUID();
+        UUID placeId = UUID.randomUUID();
 
-        Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
-        placeRepository.save(place);
-
-        Review review = new Review(UUID.randomUUID(), userId, place, "또 방문하고 싶어요!");
+        Review review = new Review(UUID.randomUUID(), userId, placeId, "또 방문하고 싶어요!");
         reviewRepository.save(review);
 
         List<UserPoint> userPoints = List.of(
@@ -65,18 +59,15 @@ class UserPointRepositoryTest {
         // given
         // 리뷰 작성
         UUID userId = UUID.randomUUID();
+        UUID placeId = UUID.randomUUID();
 
-        Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
-        placeRepository.save(place);
-
-        Review review = new Review(UUID.randomUUID(), userId, place, "또 방문하고 싶어요!");
+        Review review = new Review(UUID.randomUUID(), userId, placeId, "또 방문하고 싶어요!");
         reviewRepository.save(review);
 
         // 같은 사용자가 다른 장소에 리뷰 작성 - 새로운 리뷰 생성
-        Place place2 = new Place(UUID.randomUUID(), "광안리 수변공원");
-        placeRepository.save(place2);
+        UUID placeId2 = UUID.randomUUID();
 
-        Review review2 = new Review(UUID.randomUUID(), userId, place2, "좋아요!");
+        Review review2 = new Review(UUID.randomUUID(), userId, placeId2, "좋아요!");
         reviewRepository.save(review2);
 
         // 각 리뷰의 포인트 저장
@@ -99,18 +90,15 @@ class UserPointRepositoryTest {
         // given
         // 리뷰 작성
         UUID userId = UUID.randomUUID();
+        UUID placeId = UUID.randomUUID();
 
-        Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
-        placeRepository.save(place);
-
-        Review review = new Review(UUID.randomUUID(), userId, place, "또 방문하고 싶어요!");
+        Review review = new Review(UUID.randomUUID(), userId, placeId, "또 방문하고 싶어요!");
         reviewRepository.save(review);
 
         // 같은 사용자가 다른 장소에 리뷰 작성 - 새로운 리뷰 생성
-        Place place2 = new Place(UUID.randomUUID(), "광안리 수변공원");
-        placeRepository.save(place2);
+        UUID placeId2 = UUID.randomUUID();
 
-        Review review2 = new Review(UUID.randomUUID(), userId, place2, "좋아요!");
+        Review review2 = new Review(UUID.randomUUID(), userId, placeId2, "좋아요!");
         reviewRepository.save(review2);
 
         // 각 리뷰의 포인트 저장

@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.litsynp.mileageservice.domain.Photo;
-import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.dto.request.ReviewEventCreateRequestDto;
 import com.litsynp.mileageservice.dto.request.ReviewEventDeleteRequestDto;
@@ -69,14 +68,13 @@ class EventApiControllerTest {
     void writeReview() throws Exception {
         // given
         UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
-        Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
-                "Place 1");
+        UUID placeId = UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review expected = Review.builder()
                 .id(reviewId)
                 .userId(userId)
-                .place(place)
+                .placeId(placeId)
                 .content("좋아요!")
                 .build();
 
@@ -96,7 +94,7 @@ class EventApiControllerTest {
                 .action("ADD")
                 .reviewId(reviewId)
                 .userId(userId)
-                .placeId(place.getId())
+                .placeId(placeId)
                 .attachedPhotoIds(attachedPhotoIds)
                 .content("좋아요!")
                 .build();
@@ -104,7 +102,7 @@ class EventApiControllerTest {
         ReviewEventCreateResponseDto response = ReviewEventCreateResponseDto.builder()
                 .id(reviewId)
                 .userId(userId)
-                .placeId(place.getId())
+                .placeId(placeId)
                 .attachedPhotoIds(attachedPhotoIds)
                 .content("좋아요!")
                 .build();
@@ -156,14 +154,13 @@ class EventApiControllerTest {
     void updateReview() throws Exception {
         // given
         UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
-        Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
-                "Place 1");
+        UUID placeId = UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review existing = Review.builder()
                 .id(reviewId)
                 .userId(userId)
-                .place(place)
+                .placeId(placeId)
                 .content("좋아요!")
                 .build();
 
@@ -178,7 +175,7 @@ class EventApiControllerTest {
         Review updated = Review.builder()
                 .id(reviewId)
                 .userId(userId)
-                .place(place)
+                .placeId(placeId)
                 .content("좋아요!")
                 .build();
         Set<Photo> updatedAttachedPhotos = Set.of(
@@ -205,7 +202,7 @@ class EventApiControllerTest {
         ReviewEventUpdateResponseDto response = ReviewEventUpdateResponseDto.builder()
                 .id(reviewId)
                 .userId(userId)
-                .placeId(place.getId())
+                .placeId(placeId)
                 .attachedPhotoIds(updatedAttachedPhotoIds)
                 .content("좋아요!")
                 .build();
@@ -253,14 +250,13 @@ class EventApiControllerTest {
     void deleteReview() throws Exception {
         // given
         UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
-        Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
-                "Place 1");
+        UUID placeId = UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review review = Review.builder()
                 .id(reviewId)
                 .userId(userId)
-                .place(place)
+                .placeId(placeId)
                 .content("좋아요!")
                 .build();
 
@@ -306,14 +302,13 @@ class EventApiControllerTest {
     void sendTypeNotInReviewType() throws Exception {
         // given
         UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
-        Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
-                "Place 1");
+        UUID placeId = UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review review = Review.builder()
                 .id(reviewId)
                 .userId(userId)
-                .place(place)
+                .placeId(placeId)
                 .content("좋아요!")
                 .build();
 
@@ -323,7 +318,7 @@ class EventApiControllerTest {
                 "action", "ADD",
                 "reviewId", review.getId().toString(),
                 "userId", userId.toString(),
-                "placeId", place.getId().toString(),
+                "placeId", placeId.toString(),
                 "attachedPhotoIds", new String[0],
                 "content", "좋아요!"
         );
@@ -342,14 +337,13 @@ class EventApiControllerTest {
     void sendActionNotInReviewAction() throws Exception {
         // given
         UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
-        Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
-                "Place 1");
+        UUID placeId = UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review review = Review.builder()
                 .id(reviewId)
                 .userId(userId)
-                .place(place)
+                .placeId(placeId)
                 .content("좋아요!")
                 .build();
 
@@ -359,7 +353,7 @@ class EventApiControllerTest {
                 "action", "NOT_DEFINED", // Undefined type
                 "reviewId", review.getId().toString(),
                 "userId", userId.toString(),
-                "placeId", place.getId().toString(),
+                "placeId", placeId.toString(),
                 "attachedPhotoIds", new String[0],
                 "content", "좋아요!"
         );

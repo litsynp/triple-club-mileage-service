@@ -1,11 +1,9 @@
 package com.litsynp.mileageservice.service;
 
 import com.litsynp.mileageservice.dao.PhotoRepository;
-import com.litsynp.mileageservice.dao.PlaceRepository;
 import com.litsynp.mileageservice.dao.ReviewRepository;
 import com.litsynp.mileageservice.dao.UserPointRepository;
 import com.litsynp.mileageservice.domain.Photo;
-import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.domain.UserPoint;
 import com.litsynp.mileageservice.dto.service.ReviewCreateServiceDto;
@@ -26,18 +24,10 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserPointRepository userPointRepository;
-    private final PlaceRepository placeRepository;
     private final PhotoRepository photoRepository;
 
     @Transactional
     public Review writeReview(ReviewCreateServiceDto dto) {
-        // 장소가 존재하는지 확인
-        Place place = placeRepository.findById(dto.getPlaceId())
-                .orElseThrow(() -> new NotFoundFieldException(
-                        Place.class.getSimpleName(),
-                        "id",
-                        dto.getUserId().toString()));
-
         if (reviewRepository.existsByUserIdAndPlaceId(dto.getUserId(), dto.getPlaceId())) {
             // 한 사용자는 장소마다 리뷰를 1개만 작성할 수 있다
             throw new DuplicateResourceException(Review.class.getSimpleName());
@@ -46,7 +36,7 @@ public class ReviewService {
         Review review = Review.builder()
                 .id(dto.getReviewId())
                 .userId(dto.getUserId())
-                .place(place)
+                .placeId(dto.getPlaceId())
                 .content(dto.getContent())
                 .build();
 
@@ -74,7 +64,7 @@ public class ReviewService {
         }
 
         // 보너수 점수 계산
-        if (isFirstReviewAtPlace(place, review)) {
+        if (isFirstReviewAtPlace(dto.getPlaceId(), review)) {
             // 특정 장소에 첫 리뷰 작성: 1점
             amount++;
         }
@@ -91,12 +81,12 @@ public class ReviewService {
     /**
      * 해당 장소에서 작성한 첫 리뷰인지 반환
      *
-     * @param place  장소
-     * @param review 리뷰
+     * @param placeId 장소 ID
+     * @param review  리뷰
      * @return 해당 장소에서 작성한 첫 리뷰인지 여부
      */
-    private boolean isFirstReviewAtPlace(Place place, Review review) {
-        return !reviewRepository.existsByIdNotAndPlaceId(review.getId(), place.getId());
+    private boolean isFirstReviewAtPlace(UUID placeId, Review review) {
+        return !reviewRepository.existsByIdNotAndPlaceId(review.getId(), placeId);
     }
 
     @Transactional
@@ -143,7 +133,7 @@ public class ReviewService {
             }
         }
 
-        existing.update(existing.getUserId(), existing.getPlace(), dto.getContent());
+        existing.update(existing.getUserId(), existing.getPlaceId(), dto.getContent());
 
         return existing;
     }

@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.litsynp.mileageservice.dao.PhotoRepository;
-import com.litsynp.mileageservice.dao.PlaceRepository;
 import com.litsynp.mileageservice.dao.ReviewRepository;
 import com.litsynp.mileageservice.dao.UserPointRepository;
 import com.litsynp.mileageservice.domain.Photo;
-import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
 import com.litsynp.mileageservice.dto.service.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.service.ReviewUpdateServiceDto;
@@ -38,9 +36,6 @@ class ReviewServiceTest {
     private ReviewService reviewService;
 
     @Autowired
-    private PlaceRepository placeRepository;
-
-    @Autowired
     private PhotoRepository photoRepository;
 
     @Autowired
@@ -58,16 +53,13 @@ class ReviewServiceTest {
         void writeReview_shouldGet_1PointForText_1PointForNewPlace() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
-
+            UUID placeId = UUID.randomUUID();
             UUID reviewId = UUID.randomUUID();
 
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
                     .build();
@@ -85,9 +77,7 @@ class ReviewServiceTest {
         void writeReview_shouldGet_1PointForImage_1PointForNewPlace() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
+            UUID placeId = UUID.randomUUID();
 
             Set<Photo> photos = Set.of(
                     new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
@@ -104,7 +94,7 @@ class ReviewServiceTest {
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("")
                     .build();
@@ -122,9 +112,7 @@ class ReviewServiceTest {
         void writeReview_shouldGet_1PointForText_1PointForImage_1PointForNewPlace() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
+            UUID placeId = UUID.randomUUID();
 
             Set<Photo> photos = Set.of(
                     new Photo(UUID.randomUUID(), "abc1.jpg", "https://example.com/abc1.jpg"),
@@ -141,7 +129,7 @@ class ReviewServiceTest {
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
                     .build();
@@ -158,12 +146,11 @@ class ReviewServiceTest {
         @DisplayName("글 1자 이상, 사진 0장, 새로운 장소 아님 :: 1점")
         void writeReview_shouldGet_1PointForText() {
             // given
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
+            UUID placeId = UUID.randomUUID();
 
             // User A
             UUID userIdA = UUID.randomUUID();
-            Review reviewA = new Review(UUID.randomUUID(), userIdA, place, "좋아요!");
+            Review reviewA = new Review(UUID.randomUUID(), userIdA, placeId, "좋아요!");
             reviewRepository.save(reviewA);
 
             // User B
@@ -173,7 +160,7 @@ class ReviewServiceTest {
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userIdB)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
                     .build();
@@ -191,16 +178,14 @@ class ReviewServiceTest {
         void writeReview_1User2ReviewOnSamePlace_rejected() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
+            UUID placeId = UUID.randomUUID();
 
             UUID reviewId = UUID.randomUUID();
 
             reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
                     .build());
@@ -209,7 +194,7 @@ class ReviewServiceTest {
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(new HashSet<>())
                     .content("두 번째 리뷰")
                     .build();
@@ -231,17 +216,14 @@ class ReviewServiceTest {
         void updateReview_0PhotosPlus1ContentPreviously_addPhotos_add1Point() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
-
+            UUID placeId = UUID.randomUUID();
             UUID reviewId = UUID.randomUUID();
 
             // Write review first - 2 points (1 point for content, 1 point for new review)
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
                     .build());
@@ -276,9 +258,7 @@ class ReviewServiceTest {
         void updateReview_0PhotoPlus1ContentPreviously_changeContent_add0Point() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
+            UUID placeId = UUID.randomUUID();
 
             UUID reviewId = UUID.randomUUID();
 
@@ -286,7 +266,7 @@ class ReviewServiceTest {
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
                     .build());
@@ -310,17 +290,14 @@ class ReviewServiceTest {
         void updateReview_0Photos0ContentPreviously_changeContent_get1Point() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
-
+            UUID placeId = UUID.randomUUID();
             UUID reviewId = UUID.randomUUID();
 
             // Write review first - 1 point for new review
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(new HashSet<>())
                     .content("")
                     .build());
@@ -344,10 +321,7 @@ class ReviewServiceTest {
         void updateReview_2PhotosPlus1ContentPreviously_remove1Photo_remove0Point() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
-
+            UUID placeId = UUID.randomUUID();
             UUID reviewId = UUID.randomUUID();
 
             // Update review with new images - 1 point for content, 1 point for image, 1 point for new review
@@ -366,7 +340,7 @@ class ReviewServiceTest {
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
                     .build());
@@ -390,10 +364,7 @@ class ReviewServiceTest {
         void updateReview_2PhotosPlus1ContentPreviously_removeAllPhotos_remove1Point() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
-
+            UUID placeId = UUID.randomUUID();
             UUID reviewId = UUID.randomUUID();
 
             // Update review with new images - 1 point for content, 1 point for image, 1 point for new review
@@ -412,7 +383,7 @@ class ReviewServiceTest {
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
                     .build());
@@ -441,10 +412,7 @@ class ReviewServiceTest {
         void deleteReview_allPhotosDeletedAndPointsRemains() {
             // given
             UUID userId = UUID.randomUUID();
-
-            Place place = new Place(UUID.randomUUID(), "Place 1");
-            placeRepository.save(place);
-
+            UUID placeId = UUID.randomUUID();
             UUID reviewId = UUID.randomUUID();
 
             // Update review with new images - 1 point for content, 1 point for image, 1 point for new review
@@ -463,7 +431,7 @@ class ReviewServiceTest {
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
                     .userId(userId)
-                    .placeId(place.getId())
+                    .placeId(placeId)
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
                     .build());

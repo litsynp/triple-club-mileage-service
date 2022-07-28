@@ -59,8 +59,7 @@ $ ./gradlew build && java -jar build/libs/mileage-service-0.0.1-SNAPSHOT.jar
 
 와 같이, API 명세에 맞게 실행해보실 수 있습니다.
 
-- 미리 **사용자 2명, 장소 1개, 사진 2개**를 [`src/main/resources/data.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/data.sql)에 넣어 애플리케이션이 시작되면 `INSERT` 되도록 했습니다.
-    - 만약 초기 데이터가 필요 없으시다면 `data.sql`을 삭제하고 진행하시면 됩니다.
+- 미리 **사용자 2명, 장소 1개, 사진 2개**를 [`src/main/resources/data.sql`](https://github.com/litsynp/triple-club-mileage-service/blob/main/src/main/resources/data.sql)에 넣어서 진행할 수 있도록 했습니다. 필요에 따라 SQL을 실행하시면 됩니다.
 
 ## ⚙️ 주요 사용 프레임워크 / 라이브러리 및 버전
 
