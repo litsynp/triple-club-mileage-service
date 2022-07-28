@@ -71,6 +71,8 @@ public class ReviewService {
         reviewRepository.save(review);
 
         long amount = 0L;
+
+        // 내용 점수 계산
         if (StringUtils.hasText(dto.getContent())) {
             // 1자 이상 텍스트 작성: 1점
             amount++;
@@ -81,21 +83,29 @@ public class ReviewService {
             amount++;
         }
 
-        if (!reviewRepository.existsByIdNotAndPlaceId(review.getId(), place.getId())) {
-            /*
-             * 특정 장소에 첫 리뷰 작성: 1점
-             * 사용자 입장에서 본 '첫 리뷰'일 때 보너스 점수 부여
-             * - 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하고, 삭제된 이후 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여합니다.
-             * - 어떤 장소에 사용자 A가 리뷰를 남겼다가 삭제하는데, 삭제되기 이전 사용자 B가 리뷰를 남기면 사용자 B에게 보너스 점수를 부여하지 않습니다
-             */
+        // 보너수 점수 계산
+        if (isFirstReviewAtPlace(place, review)) {
+            // 특정 장소에 첫 리뷰 작성: 1점
             amount++;
         }
 
+        // 점수가 0 이상일 때만 기록
         if (amount > 0L) {
             userPointRepository.save(new UserPoint(UUID.randomUUID(), user, review, amount));
         }
 
         return review;
+    }
+
+    /**
+     * 해당 장소에서 작성한 첫 리뷰인지 반환
+     *
+     * @param place  장소
+     * @param review 리뷰
+     * @return 해당 장소에서 작성한 첫 리뷰인지 여부
+     */
+    private boolean isFirstReviewAtPlace(Place place, Review review) {
+        return !reviewRepository.existsByIdNotAndPlaceId(review.getId(), place.getId());
     }
 
     @Transactional
