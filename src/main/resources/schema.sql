@@ -1,16 +1,3 @@
-create table users
-(
-    id         BINARY(16)   not null,
-    email      varchar(255) not null unique,
-    password   varchar(255),
-    created_on datetime(6),
-    updated_on datetime(6),
-    primary key (id)
-) engine = InnoDB;
-
-alter table users
-    add index users_ak01 (email);
-
 create table photo
 (
     id         BINARY(16)   not null,
@@ -58,12 +45,6 @@ create table review
 ) engine = InnoDB;
 
 alter table review
-    add constraint review_fk01
-        foreign key (user_id) references users (id)
-            on delete cascade
-            on update cascade;
-
-alter table review
     add constraint review_fk02
         foreign key (place_id) references place (id)
             on delete cascade
@@ -88,12 +69,6 @@ create table user_point
     updated_on datetime(6),
     primary key (id)
 ) engine = InnoDB;
-
-alter table user_point
-    add constraint user_point_fk01
-        foreign key (user_id) references users (id)
-            on delete cascade
-            on update cascade;
 
 alter table user_point
     add constraint user_point_fk02

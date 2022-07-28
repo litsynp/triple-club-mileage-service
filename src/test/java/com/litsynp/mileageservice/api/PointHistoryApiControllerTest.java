@@ -18,15 +18,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.litsynp.mileageservice.test.util.FieldUtils;
 import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
-import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.domain.UserPoint;
 import com.litsynp.mileageservice.dto.response.UserPointHistoryResponseDto;
 import com.litsynp.mileageservice.global.config.JacksonConfig;
 import com.litsynp.mileageservice.global.config.WebConfig;
 import com.litsynp.mileageservice.service.UserPointService;
+import com.litsynp.mileageservice.test.util.FieldUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -72,19 +71,18 @@ class PointHistoryApiControllerTest {
     @DisplayName("사용자 포인트 기록 조회 - 200 OK")
     void getPointHistories() throws Exception {
         // given
-        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
-                "test@example.com", "12345678");
+        UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
 
         List<UserPoint> content = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             Place place = new Place(
                     UUID.fromString("eaa5b92d-45e1-443d-938f-eb30f24ebcc9"), "장소 " + i);
             Review review = new Review(
-                    UUID.fromString("abcee424-e5b2-4fe5-a08d-38461a808c07"), user, place, "좋아요!");
+                    UUID.fromString("abcee424-e5b2-4fe5-a08d-38461a808c07"), userId, place, "좋아요!");
 
             // 포인트 생성 후 Reflection으로 날짜 수정
             UserPoint userPoint = new UserPoint(
-                    UUID.fromString("d674fedf-0ba1-4a10-943f-905f1f30674b"), user, review, 1L);
+                    UUID.fromString("d674fedf-0ba1-4a10-943f-905f1f30674b"), userId, review, 1L);
             FieldUtils.writeSuperField(userPoint, "createdOn",
                     LocalDateTime.of(LocalDate.of(2022, 7, 10), LocalTime.of(10, 0)));
 
@@ -98,12 +96,12 @@ class PointHistoryApiControllerTest {
         Page<UserPointHistoryResponseDto> response = pageResponse.map(
                 UserPointHistoryResponseDto::from);
 
-        given(userPointService.search(any(), eq(user.getId()), eq(null)))
+        given(userPointService.search(any(), eq(userId), eq(null)))
                 .willReturn(pageResponse);
 
         // when & then
         mockMvc.perform(get("/point-histories")
-                        .queryParam("user-id", user.getId().toString())
+                        .queryParam("user-id", userId.toString())
                         .queryParam("review-id", "")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))

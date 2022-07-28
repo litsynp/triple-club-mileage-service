@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.litsynp.mileageservice.domain.Photo;
 import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
-import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.dto.request.ReviewEventCreateRequestDto;
 import com.litsynp.mileageservice.dto.request.ReviewEventDeleteRequestDto;
 import com.litsynp.mileageservice.dto.request.ReviewEventUpdateRequestDto;
@@ -69,15 +68,14 @@ class EventApiControllerTest {
     @DisplayName("리뷰 작성 이벤트 - 201 CREATED")
     void writeReview() throws Exception {
         // given
-        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
-                "test@example.com", "12345678");
+        UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
         Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
                 "Place 1");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review expected = Review.builder()
                 .id(reviewId)
-                .user(user)
+                .userId(userId)
                 .place(place)
                 .content("좋아요!")
                 .build();
@@ -97,7 +95,7 @@ class EventApiControllerTest {
                 .type("REVIEW")
                 .action("ADD")
                 .reviewId(reviewId)
-                .userId(user.getId())
+                .userId(userId)
                 .placeId(place.getId())
                 .attachedPhotoIds(attachedPhotoIds)
                 .content("좋아요!")
@@ -105,7 +103,7 @@ class EventApiControllerTest {
 
         ReviewEventCreateResponseDto response = ReviewEventCreateResponseDto.builder()
                 .id(reviewId)
-                .userId(user.getId())
+                .userId(userId)
                 .placeId(place.getId())
                 .attachedPhotoIds(attachedPhotoIds)
                 .content("좋아요!")
@@ -157,15 +155,14 @@ class EventApiControllerTest {
     @DisplayName("리뷰 수정 이벤트 - 200 OK")
     void updateReview() throws Exception {
         // given
-        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
-                "test@example.com", "12345678");
+        UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
         Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
                 "Place 1");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review existing = Review.builder()
                 .id(reviewId)
-                .user(user)
+                .userId(userId)
                 .place(place)
                 .content("좋아요!")
                 .build();
@@ -180,7 +177,7 @@ class EventApiControllerTest {
 
         Review updated = Review.builder()
                 .id(reviewId)
-                .user(user)
+                .userId(userId)
                 .place(place)
                 .content("좋아요!")
                 .build();
@@ -207,7 +204,7 @@ class EventApiControllerTest {
 
         ReviewEventUpdateResponseDto response = ReviewEventUpdateResponseDto.builder()
                 .id(reviewId)
-                .userId(user.getId())
+                .userId(userId)
                 .placeId(place.getId())
                 .attachedPhotoIds(updatedAttachedPhotoIds)
                 .content("좋아요!")
@@ -255,15 +252,14 @@ class EventApiControllerTest {
     @DisplayName("리뷰 삭제 이벤트 - 204 No Content")
     void deleteReview() throws Exception {
         // given
-        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
-                "test@example.com", "12345678");
+        UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
         Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
                 "Place 1");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review review = Review.builder()
                 .id(reviewId)
-                .user(user)
+                .userId(userId)
                 .place(place)
                 .content("좋아요!")
                 .build();
@@ -309,15 +305,14 @@ class EventApiControllerTest {
     @DisplayName("리뷰 이벤트 - 정의되지 않은 이벤트 타입 보내기 - 400")
     void sendTypeNotInReviewType() throws Exception {
         // given
-        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
-                "test@example.com", "12345678");
+        UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
         Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
                 "Place 1");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review review = Review.builder()
                 .id(reviewId)
-                .user(user)
+                .userId(userId)
                 .place(place)
                 .content("좋아요!")
                 .build();
@@ -327,7 +322,7 @@ class EventApiControllerTest {
                 "type", "NOT_DEFINED", // Undefined type
                 "action", "ADD",
                 "reviewId", review.getId().toString(),
-                "userId", user.getId().toString(),
+                "userId", userId.toString(),
                 "placeId", place.getId().toString(),
                 "attachedPhotoIds", new String[0],
                 "content", "좋아요!"
@@ -346,15 +341,14 @@ class EventApiControllerTest {
     @DisplayName("리뷰 이벤트 - 정의되지 않은 리뷰 액션 보내기 - 400")
     void sendActionNotInReviewAction() throws Exception {
         // given
-        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
-                "test@example.com", "12345678");
+        UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
         Place place = new Place(UUID.fromString("6c20dbf8-40a9-4dd0-bdab-ac490e960e38"),
                 "Place 1");
 
         UUID reviewId = UUID.fromString("92dd8f6c-25ef-46ff-944b-4401ecd09e17");
         Review review = Review.builder()
                 .id(reviewId)
-                .user(user)
+                .userId(userId)
                 .place(place)
                 .content("좋아요!")
                 .build();
@@ -364,7 +358,7 @@ class EventApiControllerTest {
                 "type", "REVIEW",
                 "action", "NOT_DEFINED", // Undefined type
                 "reviewId", review.getId().toString(),
-                "userId", user.getId().toString(),
+                "userId", userId.toString(),
                 "placeId", place.getId().toString(),
                 "attachedPhotoIds", new String[0],
                 "content", "좋아요!"

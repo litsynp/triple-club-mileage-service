@@ -24,9 +24,8 @@ public class UserPoint extends BaseTimeEntity {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID userId;
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", nullable = true)
@@ -37,9 +36,9 @@ public class UserPoint extends BaseTimeEntity {
     private Long amount;
 
     @Builder
-    public UserPoint(UUID id, User user, Review review, Long amount) {
+    public UserPoint(UUID id, UUID userId, Review review, Long amount) {
         this.id = id;
-        this.user = user;
+        this.userId = userId;
         this.review = review;
         this.amount = amount;
     }

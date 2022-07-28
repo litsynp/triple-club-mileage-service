@@ -2,11 +2,10 @@ package com.litsynp.mileageservice.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.litsynp.mileageservice.global.config.QuerydslConfig;
 import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
-import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.domain.UserPoint;
+import com.litsynp.mileageservice.global.config.QuerydslConfig;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -26,9 +25,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class UserPointRepositoryTest {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private UserPointRepository userPointRepository;
 
     @Autowired
@@ -41,24 +37,23 @@ class UserPointRepositoryTest {
     @DisplayName("사용자 포인트 전체 총점 조회")
     void getAllUserPoints() {
         // given
-        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-        userRepository.save(user);
+        UUID userId = UUID.randomUUID();
 
         Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
         placeRepository.save(place);
 
-        Review review = new Review(UUID.randomUUID(), user, place, "또 방문하고 싶어요!");
+        Review review = new Review(UUID.randomUUID(), userId, place, "또 방문하고 싶어요!");
         reviewRepository.save(review);
 
         List<UserPoint> userPoints = List.of(
-                new UserPoint(UUID.randomUUID(), user, review, 10L),
-                new UserPoint(UUID.randomUUID(), user, review, -15L),
-                new UserPoint(UUID.randomUUID(), user, review, 30L)
+                new UserPoint(UUID.randomUUID(), userId, review, 10L),
+                new UserPoint(UUID.randomUUID(), userId, review, -15L),
+                new UserPoint(UUID.randomUUID(), userId, review, 30L)
         );
         userPointRepository.saveAll(userPoints);
 
         // when
-        Long points = userPointRepository.getAllUserPoints(user.getId());
+        Long points = userPointRepository.getAllUserPoints(userId);
 
         // then
         assertThat(points).isEqualTo(25L);
@@ -69,31 +64,30 @@ class UserPointRepositoryTest {
     void getUserPointsFromReview() {
         // given
         // 리뷰 작성
-        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-        userRepository.save(user);
+        UUID userId = UUID.randomUUID();
 
         Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
         placeRepository.save(place);
 
-        Review review = new Review(UUID.randomUUID(), user, place, "또 방문하고 싶어요!");
+        Review review = new Review(UUID.randomUUID(), userId, place, "또 방문하고 싶어요!");
         reviewRepository.save(review);
 
         // 같은 사용자가 다른 장소에 리뷰 작성 - 새로운 리뷰 생성
         Place place2 = new Place(UUID.randomUUID(), "광안리 수변공원");
         placeRepository.save(place2);
 
-        Review review2 = new Review(UUID.randomUUID(), user, place2, "좋아요!");
+        Review review2 = new Review(UUID.randomUUID(), userId, place2, "좋아요!");
         reviewRepository.save(review2);
 
         // 각 리뷰의 포인트 저장
         List<UserPoint> userPoints = List.of(
-                new UserPoint(UUID.randomUUID(), user, review, 2L),
-                new UserPoint(UUID.randomUUID(), user, review2, 1L)
+                new UserPoint(UUID.randomUUID(), userId, review, 2L),
+                new UserPoint(UUID.randomUUID(), userId, review2, 1L)
         );
         userPointRepository.saveAll(userPoints);
 
         // when
-        Long points = userPointRepository.getUserPointsFromReview(user.getId(), review.getId());
+        Long points = userPointRepository.getUserPointsFromReview(userId, review.getId());
 
         // then
         assertThat(points).isEqualTo(2L);
@@ -104,32 +98,31 @@ class UserPointRepositoryTest {
     void search_ok() {
         // given
         // 리뷰 작성
-        User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-        userRepository.save(user);
+        UUID userId = UUID.randomUUID();
 
         Place place = new Place(UUID.randomUUID(), "해운대 수변공원");
         placeRepository.save(place);
 
-        Review review = new Review(UUID.randomUUID(), user, place, "또 방문하고 싶어요!");
+        Review review = new Review(UUID.randomUUID(), userId, place, "또 방문하고 싶어요!");
         reviewRepository.save(review);
 
         // 같은 사용자가 다른 장소에 리뷰 작성 - 새로운 리뷰 생성
         Place place2 = new Place(UUID.randomUUID(), "광안리 수변공원");
         placeRepository.save(place2);
 
-        Review review2 = new Review(UUID.randomUUID(), user, place2, "좋아요!");
+        Review review2 = new Review(UUID.randomUUID(), userId, place2, "좋아요!");
         reviewRepository.save(review2);
 
         // 각 리뷰의 포인트 저장
         List<UserPoint> userPoints = List.of(
-                new UserPoint(UUID.randomUUID(), user, review, 2L),
-                new UserPoint(UUID.randomUUID(), user, review2, 1L)
+                new UserPoint(UUID.randomUUID(), userId, review, 2L),
+                new UserPoint(UUID.randomUUID(), userId, review2, 1L)
         );
         userPointRepository.saveAll(userPoints);
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<UserPoint> searchResult = userPointRepository.search(pageRequest, user.getId(),
+        Page<UserPoint> searchResult = userPointRepository.search(pageRequest, userId,
                 review.getId());
 
         // then

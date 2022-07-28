@@ -30,7 +30,7 @@ public class UserPointHistoryResponseDto {
 
         return UserPointHistoryResponseDto.builder()
                 .id(point.getId())
-                .userId(point.getUser().getId())
+                .userId(point.getUserId())
                 .reviewId(reviewId)
                 .amount(point.getAmount())
                 .createdOn(point.getCreatedOn())

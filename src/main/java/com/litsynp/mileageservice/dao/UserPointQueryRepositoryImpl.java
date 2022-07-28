@@ -1,10 +1,8 @@
 package com.litsynp.mileageservice.dao;
 
 import static com.litsynp.mileageservice.domain.QReview.review;
-import static com.litsynp.mileageservice.domain.QUser.user;
 import static com.litsynp.mileageservice.domain.QUserPoint.userPoint;
 
-import com.litsynp.mileageservice.domain.QUser;
 import com.litsynp.mileageservice.domain.UserPoint;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -32,7 +30,7 @@ public class UserPointQueryRepositoryImpl implements UserPointQueryRepository {
         return query
                 .select(userPoint.amount.sum().coalesce(0L))
                 .from(userPoint)
-                .where(userPoint.user.id.eq(userId))
+                .where(userPoint.userId.eq(userId))
                 .fetchOne();
     }
 
@@ -42,7 +40,7 @@ public class UserPointQueryRepositoryImpl implements UserPointQueryRepository {
                 .select(userPoint.amount.sum().coalesce(0L))
                 .from(userPoint)
                 .innerJoin(userPoint.review, review)
-                .where(userPoint.user.id.eq(userId), reviewIdEq(reviewId))
+                .where(userPoint.userId.eq(userId), reviewIdEq(reviewId))
                 .fetchOne();
     }
 
@@ -50,7 +48,6 @@ public class UserPointQueryRepositoryImpl implements UserPointQueryRepository {
     public Page<UserPoint> search(Pageable pageable, UUID userId, UUID reviewId) {
         JPAQuery<UserPoint> contentQuery = query
                 .selectFrom(userPoint)
-                .leftJoin(userPoint.user, user).fetchJoin()
                 .leftJoin(userPoint.review, review).fetchJoin()
                 .where(userIdEq(userId), reviewIdEq(reviewId))
                 .offset(pageable.getOffset())
@@ -72,14 +69,13 @@ public class UserPointQueryRepositoryImpl implements UserPointQueryRepository {
         return query
                 .select(userPoint.count())
                 .from(userPoint)
-                .leftJoin(userPoint.user, user)
                 .leftJoin(userPoint.review, review)
                 .where(userIdEq(userId),
                         reviewIdEq(reviewId));
     }
 
     private BooleanExpression userIdEq(UUID userId) {
-        return userId != null ? userPoint.user.id.eq(userId) : null;
+        return userId != null ? userPoint.userId.eq(userId) : null;
     }
 
     private BooleanExpression reviewIdEq(UUID reviewId) {

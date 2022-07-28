@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.dto.response.UserPointTotalResponseDto;
 import com.litsynp.mileageservice.service.UserPointService;
 import java.util.UUID;
@@ -55,20 +54,19 @@ class PointApiControllerTest {
     @DisplayName("사용자 포인트 총점 조회 - 200 OK")
     void getTotalPoints() throws Exception {
         // given
-        User user = new User(UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e"),
-                "test@example.com", "12345678");
+        UUID userId = UUID.fromString("8af7030a-6639-49e3-95de-fd56e2039d8e");
 
         UserPointTotalResponseDto response = UserPointTotalResponseDto.builder()
-                .userId(user.getId())
+                .userId(userId)
                 .points(3L)
                 .build();
 
-        given(userPointService.getUserPoints(user.getId()))
+        given(userPointService.getUserPoints(userId))
                 .willReturn(3L);
 
         // when & then
         mockMvc.perform(get("/points")
-                        .queryParam("user-id", user.getId().toString())
+                        .queryParam("user-id", userId.toString())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

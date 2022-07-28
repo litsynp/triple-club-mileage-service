@@ -4,11 +4,9 @@ import com.litsynp.mileageservice.dao.PhotoRepository;
 import com.litsynp.mileageservice.dao.PlaceRepository;
 import com.litsynp.mileageservice.dao.ReviewRepository;
 import com.litsynp.mileageservice.dao.UserPointRepository;
-import com.litsynp.mileageservice.dao.UserRepository;
 import com.litsynp.mileageservice.domain.Photo;
 import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
-import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.domain.UserPoint;
 import com.litsynp.mileageservice.dto.service.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.service.ReviewUpdateServiceDto;
@@ -27,20 +25,12 @@ import org.springframework.util.StringUtils;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
     private final UserPointRepository userPointRepository;
     private final PlaceRepository placeRepository;
     private final PhotoRepository photoRepository;
 
     @Transactional
     public Review writeReview(ReviewCreateServiceDto dto) {
-        // 사용자가 존재하는지 확인
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new NotFoundFieldException(
-                        User.class.getSimpleName(),
-                        "id",
-                        dto.getUserId().toString()));
-
         // 장소가 존재하는지 확인
         Place place = placeRepository.findById(dto.getPlaceId())
                 .orElseThrow(() -> new NotFoundFieldException(
@@ -55,7 +45,7 @@ public class ReviewService {
 
         Review review = Review.builder()
                 .id(dto.getReviewId())
-                .user(user)
+                .userId(dto.getUserId())
                 .place(place)
                 .content(dto.getContent())
                 .build();
@@ -91,7 +81,8 @@ public class ReviewService {
 
         // 점수가 0 이상일 때만 기록
         if (amount > 0L) {
-            userPointRepository.save(new UserPoint(UUID.randomUUID(), user, review, amount));
+            userPointRepository.save(
+                    new UserPoint(UUID.randomUUID(), dto.getUserId(), review, amount));
         }
 
         return review;
@@ -138,21 +129,21 @@ public class ReviewService {
         // 리뷰를 수정하면 수정한 내용에 맞는 내용 점수를 계산하여 점수를 부여하거나 회수합니다.
         if (emptyPhotosBefore && !existing.getAttachedPhotos().isEmpty()) {
             // 글만 작성한 리뷰에 사진을 추가하면 1점을 부여합니다.
-            UserPoint point = new UserPoint(UUID.randomUUID(), existing.getUser(), existing, 1L);
+            UserPoint point = new UserPoint(UUID.randomUUID(), existing.getUserId(), existing, 1L);
             userPointRepository.save(point);
         }
 
         if (!emptyPhotosBefore && existing.getAttachedPhotos().isEmpty()) {
             // 글과 사진이 있는 리뷰에서 사진을 모두 삭제하면 1점을 회수합니다.
-            Long userPoints = userPointRepository.getAllUserPoints(existing.getUser().getId());
+            Long userPoints = userPointRepository.getAllUserPoints(existing.getUserId());
             if (userPoints > 0) {
                 // 1점 이상 있다면, 1점 차감
                 userPointRepository.save(
-                        new UserPoint(UUID.randomUUID(), existing.getUser(), existing, -1L));
+                        new UserPoint(UUID.randomUUID(), existing.getUserId(), existing, -1L));
             }
         }
 
-        existing.update(existing.getUser(), existing.getPlace(), dto.getContent());
+        existing.update(existing.getUserId(), existing.getPlace(), dto.getContent());
 
         return existing;
     }
@@ -165,12 +156,13 @@ public class ReviewService {
         // 리뷰를 삭제하면 해당 리뷰로 부여한 내용 점수와 보너스 점수 회수
         // 하지만 기록 유지를 위해 삭제해서는 안된다.
         Long pointsFromReview = userPointRepository.getUserPointsFromReview(
-                review.getUser().getId(), reviewId);
+                review.getUserId(), reviewId);
 
         // 해당 리뷰로부터 얻은 점수를 계산하여 회수한다.
         if (pointsFromReview > 0L) {
             userPointRepository.save(
-                    new UserPoint(UUID.randomUUID(), review.getUser(), review, -pointsFromReview));
+                    new UserPoint(UUID.randomUUID(), review.getUserId(), review,
+                            -pointsFromReview));
         }
 
         for (UserPoint point : userPointRepository.findByReviewId(reviewId)) {

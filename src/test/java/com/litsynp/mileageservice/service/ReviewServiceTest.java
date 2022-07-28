@@ -3,18 +3,16 @@ package com.litsynp.mileageservice.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.litsynp.mileageservice.global.config.QuerydslConfig;
 import com.litsynp.mileageservice.dao.PhotoRepository;
 import com.litsynp.mileageservice.dao.PlaceRepository;
 import com.litsynp.mileageservice.dao.ReviewRepository;
 import com.litsynp.mileageservice.dao.UserPointRepository;
-import com.litsynp.mileageservice.dao.UserRepository;
 import com.litsynp.mileageservice.domain.Photo;
 import com.litsynp.mileageservice.domain.Place;
 import com.litsynp.mileageservice.domain.Review;
-import com.litsynp.mileageservice.domain.User;
 import com.litsynp.mileageservice.dto.service.ReviewCreateServiceDto;
 import com.litsynp.mileageservice.dto.service.ReviewUpdateServiceDto;
+import com.litsynp.mileageservice.global.config.QuerydslConfig;
 import com.litsynp.mileageservice.global.error.exception.DuplicateResourceException;
 import java.util.HashSet;
 import java.util.List;
@@ -40,9 +38,6 @@ class ReviewServiceTest {
     private ReviewService reviewService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private PlaceRepository placeRepository;
 
     @Autowired
@@ -62,8 +57,7 @@ class ReviewServiceTest {
         @DisplayName("글 1자 이상, 사진 0장, 새로운 장소 :: 2점")
         void writeReview_shouldGet_1PointForText_1PointForNewPlace() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -72,7 +66,7 @@ class ReviewServiceTest {
 
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
@@ -82,7 +76,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(2L);
         }
 
@@ -90,8 +84,7 @@ class ReviewServiceTest {
         @DisplayName("글 0자, 사진 2장, 새로운 장소 :: 2점")
         void writeReview_shouldGet_1PointForImage_1PointForNewPlace() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -110,7 +103,7 @@ class ReviewServiceTest {
 
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("")
@@ -120,7 +113,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(2L);
         }
 
@@ -128,8 +121,7 @@ class ReviewServiceTest {
         @DisplayName("글 1자 이상, 사진 2장, 새로운 장소 :: 3점")
         void writeReview_shouldGet_1PointForText_1PointForImage_1PointForNewPlace() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -148,7 +140,7 @@ class ReviewServiceTest {
 
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
@@ -158,7 +150,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(3L);
         }
 
@@ -170,21 +162,17 @@ class ReviewServiceTest {
             placeRepository.save(place);
 
             // User A
-            User userA = new User(UUID.randomUUID(), "testa@example.com", "12345678");
-            userRepository.save(userA);
-
-            Review reviewA = new Review(UUID.randomUUID(), userA, place, "좋아요!");
+            UUID userIdA = UUID.randomUUID();
+            Review reviewA = new Review(UUID.randomUUID(), userIdA, place, "좋아요!");
             reviewRepository.save(reviewA);
 
             // User B
-            User userB = new User(UUID.randomUUID(), "testb@example.com", "12345678");
-            userRepository.save(userB);
-
+            UUID userIdB = UUID.randomUUID();
             UUID reviewId = UUID.randomUUID();
 
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(userB.getId())
+                    .userId(userIdB)
                     .placeId(place.getId())
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
@@ -194,7 +182,7 @@ class ReviewServiceTest {
             reviewService.writeReview(dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(userB.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userIdB);
             assertThat(userPoints).isEqualTo(1L);
         }
 
@@ -202,8 +190,7 @@ class ReviewServiceTest {
         @DisplayName("사용자 한 명이 같은 장소에 리뷰 2개 작성 시도 :: 에러")
         void writeReview_1User2ReviewOnSamePlace_rejected() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -212,7 +199,7 @@ class ReviewServiceTest {
 
             reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
@@ -221,7 +208,7 @@ class ReviewServiceTest {
             // when & then
             ReviewCreateServiceDto dto = ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(new HashSet<>())
                     .content("두 번째 리뷰")
@@ -243,8 +230,7 @@ class ReviewServiceTest {
         @DisplayName("기존 글 1자 이상, 사진 0장 :: 사진 추가 :: 1점 추가된다")
         void updateReview_0PhotosPlus1ContentPreviously_addPhotos_add1Point() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -254,7 +240,7 @@ class ReviewServiceTest {
             // Write review first - 2 points (1 point for content, 1 point for new review)
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
@@ -281,7 +267,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(3L);
         }
 
@@ -289,8 +275,7 @@ class ReviewServiceTest {
         @DisplayName("기존 글 1자 이상, 사진 0장 :: 글 추가 :: 점수 변동 없다")
         void updateReview_0PhotoPlus1ContentPreviously_changeContent_add0Point() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -300,7 +285,7 @@ class ReviewServiceTest {
             // Write review first - 2 points (1 point for content, 1 point for new review)
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(new HashSet<>())
                     .content("좋아요!")
@@ -316,7 +301,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(2L);
         }
 
@@ -324,8 +309,7 @@ class ReviewServiceTest {
         @DisplayName("기존 글 0자, 사진 0장 :: 글 1자 이상 추가 :: 1점 추가된다")
         void updateReview_0Photos0ContentPreviously_changeContent_get1Point() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -335,7 +319,7 @@ class ReviewServiceTest {
             // Write review first - 1 point for new review
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(new HashSet<>())
                     .content("")
@@ -351,7 +335,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(1L);
         }
 
@@ -359,8 +343,7 @@ class ReviewServiceTest {
         @DisplayName("기존 글 1자 이상, 사진 2장 :: 사진 1장 삭제 :: 점수 변동 없다")
         void updateReview_2PhotosPlus1ContentPreviously_remove1Photo_remove0Point() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -382,7 +365,7 @@ class ReviewServiceTest {
             // Write review first - 1 point for new review
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
@@ -398,7 +381,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(3L);
         }
 
@@ -406,8 +389,7 @@ class ReviewServiceTest {
         @DisplayName("기존 글 1자 이상, 사진 2장 :: 사진 일괄 삭제 :: 1점 차감된다")
         void updateReview_2PhotosPlus1ContentPreviously_removeAllPhotos_remove1Point() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -429,7 +411,7 @@ class ReviewServiceTest {
             // Write review first - 1 point for new review
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
@@ -445,7 +427,7 @@ class ReviewServiceTest {
             reviewService.updateReview(review.getId(), dto);
 
             // then
-            Long userPoints = userPointRepository.getAllUserPoints(user.getId());
+            Long userPoints = userPointRepository.getAllUserPoints(userId);
             assertThat(userPoints).isEqualTo(2L);
         }
     }
@@ -458,8 +440,7 @@ class ReviewServiceTest {
         @DisplayName("사진은 일괄 삭제, 포인트 기록은 유지된다")
         void deleteReview_allPhotosDeletedAndPointsRemains() {
             // given
-            User user = new User(UUID.randomUUID(), "test@example.com", "12345678");
-            userRepository.save(user);
+            UUID userId = UUID.randomUUID();
 
             Place place = new Place(UUID.randomUUID(), "Place 1");
             placeRepository.save(place);
@@ -481,7 +462,7 @@ class ReviewServiceTest {
             // Write review first - 1 point for new review
             Review review = reviewService.writeReview(ReviewCreateServiceDto.builder()
                     .reviewId(reviewId)
-                    .userId(user.getId())
+                    .userId(userId)
                     .placeId(place.getId())
                     .attachedPhotoIds(attachedPhotoIds)
                     .content("좋아요!")
@@ -496,7 +477,7 @@ class ReviewServiceTest {
             // 총 2개 기록 = 작성 시 추가 기록 1 (첫 리뷰 1 + 내용 1 + 사진 1) + 삭제 시 회수 기록 1개
             assertThat(userPointRepository.findAll()).hasSize(2);
 
-            assertThat(userPointRepository.getAllUserPoints(user.getId())).isZero();
+            assertThat(userPointRepository.getAllUserPoints(userId)).isZero();
             assertThat(photoRepository.findAll()).isEmpty();
         }
     }

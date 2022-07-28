@@ -32,7 +32,7 @@ public class ReviewEventUpdateResponseDto {
 
         return ReviewEventUpdateResponseDto.builder()
                 .id(review.getId())
-                .userId(review.getUser().getId())
+                .userId(review.getUserId())
                 .placeId(review.getPlace().getId())
                 .attachedPhotoIds(attachedPhotoIds)
                 .content(review.getContent())

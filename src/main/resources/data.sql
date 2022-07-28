@@ -1,21 +1,6 @@
 use testdb;
 
 # =========================================== #
-# user
-# =========================================== #
-# Set user ID
-set @user_id = uuid_to_bin('31313130-3031-3131-3130-000000000000');
-set @user_id2 = uuid_to_bin('7f7862f3-fcf5-11ec-b3c2-0242ac170002');
-
-# Create user
-insert
-into users (email, password, id)
-values ('testuser1@example.com', '12345678', @user_id);
-insert
-into users (email, password, id)
-values ('testuser2@example.com', '12345678', @user_id2);
-
-# =========================================== #
 # place
 # =========================================== #
 # Set place ID

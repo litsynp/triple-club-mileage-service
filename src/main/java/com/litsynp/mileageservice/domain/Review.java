@@ -27,24 +27,23 @@ public class Review extends BaseTimeEntity {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID userId;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
     @OneToMany(mappedBy = "review", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Photo> attachedPhotos = new HashSet<>();
+    private final Set<Photo> attachedPhotos = new HashSet<>();
 
     @NotNull
     private String content;
 
     @Builder
-    public Review(UUID id, User user, Place place, String content) {
+    public Review(UUID id, UUID userId, Place place, String content) {
         this.id = id;
-        this.user = user;
+        this.userId = userId;
         this.place = place;
         this.content = content;
     }
@@ -59,8 +58,8 @@ public class Review extends BaseTimeEntity {
         photo.setReview(null);
     }
 
-    public void update(User user, Place place, String content) {
-        this.user = user;
+    public void update(UUID userId, Place place, String content) {
+        this.userId = userId;
         this.place = place;
         this.content = content;
     }
